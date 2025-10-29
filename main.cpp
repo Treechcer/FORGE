@@ -14,8 +14,8 @@ size_t hashString(std::string toHash) {
     return hashValue;
 }
 
-int main() {
-    std::string path = ".";
+std::vector <std::string> getFilesToCopy(std::string path = "."){
+    std::string path = path;
     std::vector<std::string> toCopy;
     for (const auto &entry : std::filesystem::directory_iterator(path)) { // thanks stack overflow!!
         //std::cout << entry.path() << std::endl;
@@ -31,13 +31,18 @@ int main() {
             toCopy.push_back(file);
         }
     }
+}
 
-    for (int i = 0; i < toCopy.size(); i++) {
+int main() {
+    std::vector<std::string> toCopy = getFilesToCopy();
+
+    for (int i = 0; i < toCopy.size(); i++) { // debug / temp writing out files
         std::cout << toCopy[i] << std::endl;
     }
 
-    std::filesystem::create_directories("./.temp");
-    for (int i = 0; i < toCopy.size(); i++) {
+    std::filesystem::create_directories("./.temp"); // for creating the build folder (called .temp for now)
+    
+	for (int i = 0; i < toCopy.size(); i++) {
         std::ifstream src(toCopy[i], std::ios::binary);
         std::ofstream dst(std::filesystem::path(".temp") / toCopy[i], std::ios::binary);
         dst << src.rdbuf();
