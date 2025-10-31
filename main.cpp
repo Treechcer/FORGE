@@ -24,14 +24,15 @@ std::vector <std::string> getFilesToCopy(std::string path = "."){
 
         //std::cout << file << std::endl;
 
-        if (std::regex_search(file, std::regex(".cpp$"))) {
+        if (std::regex_search(file, std::regex("\\.cpp$"))) {
             toCopy.push_back(file);
         }
-        else if (std::regex_search(file, std::regex(".h$"))) {
+        else if (std::regex_search(file, std::regex("\\.h$"))) {
             toCopy.push_back(file);
         }
-        else if (entry.is_directory()) {
-            toCopy = getFilesToCopy(file);
+        else if (entry.is_directory() && std::regex_search(file, std::regex(".\\.path"))) {
+            std::vector<std::string> subFiles = getFilesToCopy(file);
+            toCopy.insert(toCopy.end(), subFiles.begin(), subFiles.end());
         }
     }
 
@@ -54,13 +55,13 @@ int main() {
         std::string contentPNew((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
         //std::cout << hashString(contentPNew) << std::endl;
 
-        int hashPNew = hashString(contentPNew);
+        size_t hashPNew = hashString(contentPNew);
 
         std::ifstream ifs2(std::filesystem::path(".temp") / toCopy[i].substr(2));
         std::string contentPold((std::istreambuf_iterator<char>(ifs2)), (std::istreambuf_iterator<char>()));
         //std::cout << hashString(contentPold) << std::endl;
 
-        int hashPOld = hashString(contentPold);
+        size_t hashPOld = hashString(contentPold);
 
         if (hashPNew != hashPOld){
             std::ifstream src(toCopy[i], std::ios::binary);
