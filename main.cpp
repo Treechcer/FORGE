@@ -7,6 +7,8 @@
 #include <vector>
 
 std::filesystem::path FORGEPATH = ".\\.FORGE";
+std::filesystem::path FORGEPROJECTPATH = ".\\.FORGE\\\\.PROJECT";
+std::filesystem::path FORGEDATAPATH = ".\\.FORGE\\\\.DATA";
 
 size_t hashString(std::string toHash) {
     std::string text = toHash;
@@ -40,7 +42,7 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
     for (int i = 0; i < paths.size(); i++){
         std::string temp = paths[i].string();
         temp.erase(0, 2);
-        paths[i] = std::filesystem::path(FORGEPATH / temp);
+        paths[i] = std::filesystem::path(FORGEPROJECTPATH / temp);
         std::cout << temp << '\n';
         std::cout << paths[i] << '\n';
     }
@@ -53,7 +55,7 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         return 1;
     }
 
-    size_t empyStr = hashString("");
+    //size_t empyStr = hashString(""); // -- might use later
 
     for (int i = 0; i < pathAfter.size(); i++){
         std::ifstream f1(pathBefore[i]);
@@ -61,7 +63,7 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         buffer << f1.rdbuf();
         size_t beforeHash = hashString(buffer.str());
         f1.close();
-        
+
         buffer.str("");
         buffer.clear();
 
@@ -79,11 +81,27 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
     return 0;
 }
 
+void compileAll(std::vector<std::filesystem::path> pathAfter) {
+    //std::cout << changedPaths[0].filename() << " " << changedPaths[0].parent_path() / changedPaths[0].replace_extension(".o");
+
+    for (int i = 0; i < pathAfter.size(); i++){
+        //g++ changedPaths[0] -o changedPaths[0].parent_path() / changedPaths[0].replace_extension(".o")
+        std::string cmd = "g++ -c ";
+        cmd.append(pathAfter[i].string());
+        cmd.append(" -o ");
+        cmd.append(pathAfter[i].replace_extension(".o").string());
+        std::cout << cmd << std::endl;
+        system(cmd.c_str());
+    }
+}
+
 int main() {
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
+    std::filesystem::create_directory(FORGEPROJECTPATH);
+    std::filesystem::create_directory(FORGEDATAPATH);
 
     paths = getFiles(thisDir, paths);
 
@@ -94,6 +112,8 @@ int main() {
     if (status == 1){
         return 0;
     }
+
+    compileAll(changedPaths);
 
     return 0;
 }
