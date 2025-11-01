@@ -53,9 +53,27 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         return 1;
     }
 
+    size_t empyStr = hashString("");
+
     for (int i = 0; i < pathAfter.size(); i++){
-        std::filesystem::create_directories(pathAfter[i].parent_path());
-        std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+        std::ifstream f1(pathBefore[i]);
+        std::stringstream buffer;
+        buffer << f1.rdbuf();
+        size_t beforeHash = hashString(buffer.str());
+        f1.close();
+        
+        buffer.str("");
+        buffer.clear();
+
+        std::ifstream f2(pathAfter[i]);
+        buffer << f2.rdbuf();
+        size_t afterHash = hashString(buffer.str());
+        f2.close();
+
+        if ((afterHash != beforeHash)) {
+            std::filesystem::create_directories(pathAfter[i].parent_path());
+            std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+        }
     }
 
     return 0;
