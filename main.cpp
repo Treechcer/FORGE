@@ -12,6 +12,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter);
 std::filesystem::path FORGEPATH = ".\\.FORGE";
 std::filesystem::path FORGEPROJECTPATH = ".\\.FORGE\\\\.PROJECT";
 std::filesystem::path FORGEDATAPATH = ".\\.FORGE\\\\.DATA";
+bool HASH = false;
 
 size_t hashString(std::string toHash) {
     std::string text = toHash;
@@ -61,21 +62,37 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
     //size_t empyStr = hashString(""); // -- might use later
 
     for (int i = 0; i < pathAfter.size(); i++){
-        std::ifstream f1(pathBefore[i]);
-        std::stringstream buffer;
-        buffer << f1.rdbuf();
-        size_t beforeHash = hashString(buffer.str());
-        f1.close();
+        bool copy = false;
 
-        buffer.str("");
-        buffer.clear();
+        if (HASH){
+            std::ifstream f1(pathBefore[i]);
+            std::stringstream buffer;
+            buffer << f1.rdbuf();
+            size_t beforeHash = hashString(buffer.str());
+            f1.close();
 
-        std::ifstream f2(pathAfter[i]);
-        buffer << f2.rdbuf();
-        size_t afterHash = hashString(buffer.str());
-        f2.close();
+            buffer.str("");
+            buffer.clear();
 
-        if ((afterHash != beforeHash)) {
+            std::ifstream f2(pathAfter[i]);
+            buffer << f2.rdbuf();
+            size_t afterHash = hashString(buffer.str());
+            f2.close();
+
+            if (afterHash != beforeHash){
+                copy = true;
+            }
+        }
+        else{
+            if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])){
+                copy = true;
+            }
+            else if (!(std::filesystem::exists(pathAfter[i]))){
+                copy = true;
+            }
+        }
+
+        if (copy) {
             std::filesystem::create_directories(pathAfter[i].parent_path());
             std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
 
@@ -94,7 +111,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         //if (pathAfter[i].extension()){}
 
         if (pathAfter[i].extension() == ".h") {
-            break;
+            continue;
         }
 
         std::string cmd = "g++ -c ";
@@ -123,7 +140,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++){
         if (pathAfter[i].extension() == ".h") {
-            break;
+            continue;;
         }
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
