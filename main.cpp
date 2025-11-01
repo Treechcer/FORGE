@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+void compileOne(std::filesystem::path pathAfter);
+void buildPorject(std::vector<std::filesystem::path> pathAfter);
+
 std::filesystem::path FORGEPATH = ".\\.FORGE";
 std::filesystem::path FORGEPROJECTPATH = ".\\.FORGE\\\\.PROJECT";
 std::filesystem::path FORGEDATAPATH = ".\\.FORGE\\\\.DATA";
@@ -75,6 +78,8 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         if ((afterHash != beforeHash)) {
             std::filesystem::create_directories(pathAfter[i].parent_path());
             std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+
+            compileOne(pathAfter[i]);
         }
     }
 
@@ -95,6 +100,28 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
     }
 }
 
+void compileOne(std::filesystem::path pathAfter) {
+    std::string cmd = "g++ -c ";
+    cmd.append(pathAfter.string());
+    cmd.append(" -o ");
+    cmd.append(pathAfter.replace_extension(".o").string());
+    std::cout << cmd << std::endl;
+    system(cmd.c_str());
+}
+
+void buildPorject(std::vector<std::filesystem::path> pathAfter) {
+    std::string allObJs = "";
+    for (int i = 0; i < pathAfter.size(); i++){
+        allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
+    }
+
+    std::cout << allObJs << "\n";
+
+    std::string cmd = "g++ " + allObJs + "-o app.exe";
+    system(cmd.c_str());
+    std::cout << cmd;
+}
+
 int main() {
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
@@ -113,7 +140,9 @@ int main() {
         return 0;
     }
 
-    compileAll(changedPaths);
+    //compileAll(changedPaths);
+
+    buildPorject(changedPaths);
 
     return 0;
 }
