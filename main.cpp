@@ -1,3 +1,4 @@
+#include "configParser.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -33,7 +34,7 @@ std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vect
             std::cout << entry.path() << "\n";
             paths.push_back(entry.path());
         }
-        else if (entry.is_directory()){
+        else if (entry.is_directory()) {
             paths = getFiles(entry.path(), paths);
         }
     }
@@ -43,7 +44,7 @@ std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vect
 
 std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path> paths) {
     //std::cout << "----------------------------------------\n";
-    for (int i = 0; i < paths.size(); i++){
+    for (int i = 0; i < paths.size(); i++) {
         std::string temp = paths[i].string();
         temp.erase(0, 2);
         paths[i] = std::filesystem::path(FORGEPROJECTPATH / temp);
@@ -55,16 +56,16 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
 }
 
 int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
-    if (pathAfter.size() != pathBefore.size()){
+    if (pathAfter.size() != pathBefore.size()) {
         return 1;
     }
 
     //size_t empyStr = hashString(""); // -- might use later
 
-    for (int i = 0; i < pathAfter.size(); i++){
+    for (int i = 0; i < pathAfter.size(); i++) {
         bool copy = false;
 
-        if (HASH){
+        if (HASH) {
             std::ifstream f1(pathBefore[i]);
             std::stringstream buffer;
             buffer << f1.rdbuf();
@@ -79,15 +80,15 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
             size_t afterHash = hashString(buffer.str());
             f2.close();
 
-            if (afterHash != beforeHash){
+            if (afterHash != beforeHash) {
                 copy = true;
             }
         }
-        else{
-            if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])){
+        else {
+            if (!(std::filesystem::exists(pathAfter[i]))) {
                 copy = true;
             }
-            else if (!(std::filesystem::exists(pathAfter[i]))){
+            else if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])) {
                 copy = true;
             }
         }
@@ -106,7 +107,7 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
 void compileAll(std::vector<std::filesystem::path> pathAfter) {
     //std::cout << changedPaths[0].filename() << " " << changedPaths[0].parent_path() / changedPaths[0].replace_extension(".o");
 
-    for (int i = 0; i < pathAfter.size(); i++){
+    for (int i = 0; i < pathAfter.size(); i++) {
         //g++ changedPaths[0] -o changedPaths[0].parent_path() / changedPaths[0].replace_extension(".o")
         //if (pathAfter[i].extension()){}
 
@@ -124,7 +125,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
 }
 
 void compileOne(std::filesystem::path pathAfter) {
-    if (pathAfter.extension() == ".h"){
+    if (pathAfter.extension() == ".h") {
         return;
     }
 
@@ -138,22 +139,34 @@ void compileOne(std::filesystem::path pathAfter) {
 
 void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::string allObJs = "";
-    for (int i = 0; i < pathAfter.size(); i++){
+    for (int i = 0; i < pathAfter.size(); i++) {
         if (pathAfter[i].extension() == ".h") {
-            continue;;
+            continue;
+            ;
         }
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
 
     //std::cout << allObJs << "\n";
-
-    std::string cmd = "g++ " + allObJs + "-o app.exe";
+    std::string appName = cfgVals("exeName");
+    std::string cmd = "g++ " + allObJs + "-o " + appName;
+    std::cout << cmd;
     system(cmd.c_str());
     //std::cout << cmd;
 }
 
+bool strToBool(std::string strBool){
+    if (strBool == "true") return true;
+    return false;
+}
+
 int main() {
-    std::vector<std::filesystem::path> paths;
+    create();
+
+    HASH = strToBool(cfgVals("hash"));
+
+    std::vector<std::filesystem::path>
+        paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
@@ -166,7 +179,7 @@ int main() {
 
     int status = copyFiles(paths, changedPaths);
 
-    if (status == 1){
+    if (status == 1) {
         return 0;
     }
 
