@@ -41,13 +41,13 @@ std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vect
 }
 
 std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path> paths) {
-    std::cout << "----------------------------------------\n";
+    //std::cout << "----------------------------------------\n";
     for (int i = 0; i < paths.size(); i++){
         std::string temp = paths[i].string();
         temp.erase(0, 2);
         paths[i] = std::filesystem::path(FORGEPROJECTPATH / temp);
-        std::cout << temp << '\n';
-        std::cout << paths[i] << '\n';
+        //std::cout << temp << '\n';
+        //std::cout << paths[i] << '\n';
     }
 
     return paths;
@@ -91,35 +91,48 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
 
     for (int i = 0; i < pathAfter.size(); i++){
         //g++ changedPaths[0] -o changedPaths[0].parent_path() / changedPaths[0].replace_extension(".o")
+        //if (pathAfter[i].extension()){}
+
+        if (pathAfter[i].extension() == ".h") {
+            break;
+        }
+
         std::string cmd = "g++ -c ";
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
-        std::cout << cmd << std::endl;
+        //std::cout << cmd << std::endl;
         system(cmd.c_str());
     }
 }
 
 void compileOne(std::filesystem::path pathAfter) {
+    if (pathAfter.extension() == ".h"){
+        return;
+    }
+
     std::string cmd = "g++ -c ";
     cmd.append(pathAfter.string());
     cmd.append(" -o ");
     cmd.append(pathAfter.replace_extension(".o").string());
-    std::cout << cmd << std::endl;
+    //std::cout << cmd << std::endl;
     system(cmd.c_str());
 }
 
 void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++){
+        if (pathAfter[i].extension() == ".h") {
+            break;
+        }
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
 
-    std::cout << allObJs << "\n";
+    //std::cout << allObJs << "\n";
 
     std::string cmd = "g++ " + allObJs + "-o app.exe";
     system(cmd.c_str());
-    std::cout << cmd;
+    //std::cout << cmd;
 }
 
 int main() {
@@ -143,6 +156,10 @@ int main() {
     //compileAll(changedPaths);
 
     buildPorject(changedPaths);
+
+    //for (int i = 0; i < changedPaths.size(); i++){
+    //    std::cout << changedPaths[i].extension();
+    //}
 
     return 0;
 }
