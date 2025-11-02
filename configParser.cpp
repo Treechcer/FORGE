@@ -17,10 +17,23 @@ class parser {
 
         this->fileName = fileName;
         std::ifstream ifs(fileName);
+
+        if (!ifs.is_open()){
+            std::ofstream ofs(fileName);
+            ofs << parser::defaultConfig();
+        }
+
         std::stringstream ss;
         ss << ifs.rdbuf();
         content = ss.str();
         ifs.close();
+
+        this->content = content;
+    }
+
+    static std::string defaultConfig(){
+        return R"(hash.value false
+exeName.value app.exe)";
     }
 
     static void createFiles(std::filesystem::path file, std::string value) {

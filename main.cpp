@@ -161,17 +161,16 @@ bool strToBool(std::string strBool){
 }
 
 int main() {
-    create();
-
-    HASH = strToBool(cfgVals("hash"));
-
-    std::vector<std::filesystem::path>
-        paths;
+    std::vector<std::filesystem::path>paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
+
+    create();
+
+    HASH = strToBool(cfgVals("hash"));
 
     paths = getFiles(thisDir, paths);
 
