@@ -7,12 +7,16 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 void compileOne(std::filesystem::path pathAfter);
 void buildPorject(std::vector<std::filesystem::path> pathAfter);
 
-std::filesystem::path FORGEPATH = ".\\.FORGE";
-std::filesystem::path FORGEPROJECTPATH = ".\\.FORGE\\\\.PROJECT";
-std::filesystem::path FORGEDATAPATH = ".\\.FORGE\\\\.DATA";
+std::filesystem::path FORGEPATH = ".FORGE";
+std::filesystem::path FORGEPROJECTPATH = FORGEPATH / "PROJECT";
+std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
 bool HASH = false;
 
 size_t hashString(std::string toHash) {
@@ -155,16 +159,20 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     //std::cout << cmd;
 }
 
-bool strToBool(std::string strBool){
-    if (strBool == "true") return true;
+bool strToBool(std::string strBool) {
+    if (strBool == "true")
+        return true;
     return false;
 }
 
 int main() {
-    std::vector<std::filesystem::path>paths;
+    std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
+#ifdef _WIN32
+    SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
+#endif
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
 
