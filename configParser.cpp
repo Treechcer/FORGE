@@ -46,7 +46,7 @@ exeName.value app.exe)";
     }
 
     static std::string variableValueCreator(std::string valueName) {
-        std::filesystem::path path = ".\\.FORGE\\\\.DATA\\" + valueName + ".value";
+        std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
         std::ifstream ifs(path);
         std::stringstream buffer;
         buffer << ifs.rdbuf();
