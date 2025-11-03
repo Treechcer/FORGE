@@ -7,8 +7,11 @@
 #include <string>
 #include <vector>
 
-#ifdef _WIN32
-#include <windows.h>
+#if defined(_WIN32)
+    #include <windows.h>
+#elif defined(__linux__)
+    #include <limits.h>
+    #include <unistd.h>
 #endif
 
 void compileOne(std::filesystem::path pathAfter);
@@ -165,7 +168,31 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
+std::filesystem::path getExecFolder() {
+#if defined(_WIN32)
+    char path[MAX_PATH];
+    HMODULE hModule = GetModuleHandle(nullptr);
+    if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
+        return std::filesystem::path(path);
+    }
+#elif defined(__linux__)
+    char path[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    if (count != -1) {
+        return std::filesystem::path(std::string(path, count));
+    }
+#endif
+    return {};
+}
+
 int main() {
+    std::filesystem::path execFolder =  getExecFolder();
+    if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")){
+        std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
+        ofs << parser::defaultConfig();
+    }
+    std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+    return 0;
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
@@ -173,6 +200,7 @@ int main() {
 #ifdef _WIN32
     SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
+
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
 

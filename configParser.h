@@ -14,6 +14,7 @@ class parser {
     parser(std::filesystem::path fileName);
     void static createFiles(std::filesystem::path file, std::string value);
     std::string static variableValueCreator(std::string valueName);
+    static std::string defaultConfig();
 };
 
 void config(std::string config);
