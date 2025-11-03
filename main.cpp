@@ -8,10 +8,10 @@
 #include <vector>
 
 #if defined(_WIN32)
-    #include <windows.h>
+#include <windows.h>
 #elif defined(__linux__)
-    #include <limits.h>
-    #include <unistd.h>
+#include <limits.h>
+#include <unistd.h>
 #endif
 
 void compileOne(std::filesystem::path pathAfter);
@@ -28,6 +28,23 @@ size_t hashString(std::string toHash) {
     size_t hashValue = hasher(text);
     //std::cout << hashValue << std::endl;
     return hashValue;
+}
+
+std::filesystem::path getExecFolder() {
+#if defined(_WIN32)
+    char path[MAX_PATH];
+    HMODULE hModule = GetModuleHandle(nullptr);
+    if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
+        return std::filesystem::path(path);
+    }
+#elif defined(__linux__)
+    char path[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    if (count != -1) {
+        return std::filesystem::path(std::string(path, count));
+    }
+#endif
+    return {};
 }
 
 std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths) {
@@ -154,6 +171,24 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
 
+#ifdef _WIN32
+    std::filesystem::path execFolder = getExecFolder();
+    std::filesystem::path rcFile = execFolder.parent_path() / "resources.rc";
+    std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / "PROJECT" / "resources.o";
+
+    if (std::filesystem::exists(rcFile)) {
+        std::cout << execFolder << "\n"
+                  << rcFile << "\n"
+                  << objFile << "\n";
+        std::string cmd = "windres ";
+        cmd.append(rcFile.string() + " ");
+        cmd.append(objFile.string());
+        std::cout << cmd;
+        system(cmd.c_str());
+        allObJs.append(objFile.string() + " ");
+    }
+#endif
+
     //std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
     std::string cmd = "g++ " + allObJs + "-o " + appName;
@@ -168,36 +203,20 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
-std::filesystem::path getExecFolder() {
-#if defined(_WIN32)
-    char path[MAX_PATH];
-    HMODULE hModule = GetModuleHandle(nullptr);
-    if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
-        return std::filesystem::path(path);
-    }
-#elif defined(__linux__)
-    char path[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-    if (count != -1) {
-        return std::filesystem::path(std::string(path, count));
-    }
-#endif
-    return {};
-}
-
 int main() {
-    std::filesystem::path execFolder =  getExecFolder();
-    if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")){
+    std::filesystem::path execFolder = getExecFolder();
+    if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
         ofs << parser::defaultConfig();
     }
     std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
-    return 0;
+
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
 #ifdef _WIN32
+    //system(("windres " + (execFolder.parent_path() / "resources.rc").string()(execFolder.parent_path() / "resources.rc").string() + "./.FORGE/PROJECT/resources.o").c_str());
     SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
 
