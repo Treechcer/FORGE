@@ -202,6 +202,10 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
 }
 
 int main() {
+    std::filesystem::create_directory(FORGEPATH);
+    std::filesystem::create_directory(FORGEPROJECTPATH);
+    std::filesystem::create_directory(FORGEDATAPATH);
+    std::cout << FORGEPATH;
     std::filesystem::path execFolder = getExecFolder();
     if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
@@ -217,9 +221,6 @@ int main() {
     //system(("windres " + (execFolder.parent_path() / "resources.rc").string()(execFolder.parent_path() / "resources.rc").string() + "./.FORGE/PROJECT/resources.o").c_str());
     SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
-
-    std::filesystem::create_directory(FORGEPROJECTPATH);
-    std::filesystem::create_directory(FORGEDATAPATH);
 
     create();
 
