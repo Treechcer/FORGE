@@ -11,7 +11,7 @@ class parser {
     std::string content;
     parser(std::filesystem::path fileName) {
         if (fileName.extension() != ".forgecfg") {
-            std::cout << "incorrect file extension";
+            //std::cout << "incorrect file extension";
             std::exit(1);
         }
 
@@ -50,9 +50,9 @@ exeName.value app.exe)";
         std::ifstream ifs(path);
         std::stringstream buffer;
         buffer << ifs.rdbuf();
-        std::cout << path;
+        //std::cout << path;
         if (buffer.str() == ""){
-            std::cout << "file is empty or doesn't exist";
+            //std::cout << "file is empty or doesn't exist";
             std::exit(1);
         }
         return buffer.str();

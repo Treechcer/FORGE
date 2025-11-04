@@ -55,7 +55,7 @@ std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vect
         std::string str = entry.path().string();
         //std::cout << str << std::endl;
         if (std::regex_match(str, std::regex(".*\\.cpp$")) || std::regex_match(str, std::regex(".*\\.h$"))) {
-            std::cout << entry.path() << "\n";
+            //std::cout << entry.path() << "\n";
             paths.push_back(entry.path());
         }
         else if (entry.is_directory()) {
@@ -161,6 +161,12 @@ void compileOne(std::filesystem::path pathAfter) {
     system(cmd.c_str());
 }
 
+bool strToBool(std::string strBool) {
+    if (strBool == "true")
+        return true;
+    return false;
+}
+
 void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
@@ -177,13 +183,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / "PROJECT" / "resources.o";
 
     if (std::filesystem::exists(rcFile)) {
-        std::cout << execFolder << "\n"
-                  << rcFile << "\n"
-                  << objFile << "\n";
+        //std::cout << execFolder << "\n" << rcFile << "\n" << objFile << "\n";
         std::string cmd = "windres ";
         cmd.append(rcFile.string() + " ");
         cmd.append(objFile.string());
-        std::cout << cmd;
+        //std::cout << cmd;
         system(cmd.c_str());
         allObJs.append(objFile.string() + " ");
     }
@@ -192,15 +196,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     //std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
     std::string cmd = "g++ " + allObJs + "-o " + appName;
-    std::cout << cmd;
+    //std::cout << cmd;
     system(cmd.c_str());
     //std::cout << cmd;
-}
-
-bool strToBool(std::string strBool) {
-    if (strBool == "true")
-        return true;
-    return false;
 }
 
 int main() {
@@ -244,6 +242,8 @@ int main() {
     //for (int i = 0; i < changedPaths.size(); i++){
     //    std::cout << changedPaths[i].extension();
     //}
+
+    std::cout << "FINISHED";
 
     return 0;
 }
