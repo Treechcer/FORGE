@@ -79,7 +79,51 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
     return paths;
 }
 
-int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
+void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter){
+    for (int i = 0; i < pathAfter.size(); i++) {
+        if (!(pathAfter[i].extension() == ".h")){
+            continue;
+        }
+        bool copy = false;
+
+        if (HASH) {
+            std::ifstream f1(pathBefore[i]);
+            std::stringstream buffer;
+            buffer << f1.rdbuf();
+            size_t beforeHash = hashString(buffer.str());
+            f1.close();
+
+            buffer.str("");
+            buffer.clear();
+
+            std::ifstream f2(pathAfter[i]);
+            buffer << f2.rdbuf();
+            size_t afterHash = hashString(buffer.str());
+            f2.close();
+
+            if (afterHash != beforeHash) {
+                copy = true;
+            }
+        }
+        else {
+            if (!(std::filesystem::exists(pathAfter[i]))) {
+                copy = true;
+            }
+            else if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])) {
+                copy = true;
+            }
+        }
+
+        if (copy) {
+            std::filesystem::create_directories(pathAfter[i].parent_path());
+            std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+
+            compileOne(pathAfter[i]);
+        }
+    }
+}
+
+    int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
     if (pathAfter.size() != pathBefore.size()) {
         return 1;
     }
@@ -205,7 +249,6 @@ int main() {
     std::filesystem::create_directory(FORGEPATH);
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
-    std::cout << FORGEPATH;
     std::filesystem::path execFolder = getExecFolder();
     if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
@@ -221,7 +264,7 @@ int main() {
     //system(("windres " + (execFolder.parent_path() / "resources.rc").string()(execFolder.parent_path() / "resources.rc").string() + "./.FORGE/PROJECT/resources.o").c_str());
     SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
-
+    
     create();
 
     HASH = strToBool(cfgVals("hash"));
@@ -229,7 +272,7 @@ int main() {
     paths = getFiles(thisDir, paths);
 
     changedPaths = changePaths(paths);
-
+    copyHeaderFiles(paths, changedPaths);
     int status = copyFiles(paths, changedPaths);
 
     if (status == 1) {
