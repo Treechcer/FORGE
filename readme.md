@@ -18,7 +18,7 @@
 
 ## intro
 
-Forge is multi platform script (Windows and Linux) that compiles C++ code, into `.exe` files effectively.
+Forge is multi platform script (Windows and Linux) that compiles C++ code, into `.exe` files effectively. Forge uses g++ to compile to .exe, you have to have g++ to use this.
 
 ## How it works?
 
