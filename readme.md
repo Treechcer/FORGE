@@ -23,7 +23,7 @@ This mode checks Time of edit of the file in `./.FORGE/.PROJECT` and in
 
 ## Build project
 
-After all files has been compiled into `.o`
+After all files has been compiled into `.o` it starts the build process and converts it into `.exe` file, which then is outputed to path where you are exectuing it into.
 
 ## config
 
