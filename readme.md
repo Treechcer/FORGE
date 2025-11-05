@@ -44,3 +44,17 @@ This type of config works by having space or new line between keys and values.
 
 - `hash.value` : This switches between Hash and Time mode to compare the values of files.
 - `exeName.value` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
+
+## Installation
+
+### Release
+
+I would recommend downloading the newest release of this script. There is now
+testing release, you can look for it [here](https://github.com/Treechcer/FORGE/releases/tag/test-version) where is tutorial how to download it too.
+
+### Compile yourself
+
+The you can compile this yourself and create folder with your compiled `.exe`, any
+`.ico` that's named "FORGE.ico" and `forge.forgecfg` and adding your folder
+Environmental Variables into Path (Windows), for linux I have no idea how to do
+it for now (+ no idea how well it works - this will be tested later).
