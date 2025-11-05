@@ -1,3 +1,41 @@
 # FORGE
 
-Forge is aimed to be multiplatform (Linux and Windows) code to build C++ effectively. Forges is effectively compiling only files that are changed from your last compilation to `-o` files, which makes it more effective then compiling instantly into `.exe` files. Forges has two modes how it can compile, `HASH` and `TIME` mode, Hash mdoe checks heshes of the files (which is sligtly slower for big projects) and tkaes the currect file, Time mode works by just compring times, when the times are different, it uses the current file from your folder. It has it's own folder `.FORGE` which has two subdirectories `.DATA` and `.PROJECT`, where `.PROJECT` save all your `.cpp` and `.h` files, `.DATA` just stores your currect config (doesn't work RN, because it always gets rewriten**). For windows it also automatically creates icon with the default `.ico` file, you can change the .ico file to anything you want to compile into, later I want to make in `.DATA` or something like that because it would make it more configuratable and more projects could have more icons and not just one that you have in root directory. Installation is now just copying the files into your desired folder and ocmpiling it yourelf, bceuase there are not any releases and I don't "suply" the .exe file in the directory, it'll get release when the version of this small script and it's function will be in at least fuctional state, which I think will be soon, you can make it executable as "forge" is you add to your currect local variables `C:\\path\to\forge` note that you have to make the path not to the .exe file but to the folder containig the exe file. There's `forge.forgecfg` as your config file, where you can switch between HAST and TIME mode changing the false to true and you can change the name of the .exe you get out it, by changing `app.exe` to `yourDesiredName.exe`.
+## intro
+
+Forge is multiplafrom script (Windows and Linux) that compiles C++ code, into `.exe` files effectively.
+
+## How it works?
+
+Forge checks all `.cpp` and `.h` files, then it chceks them if they 
+should be switched and compiled into object files (`.o`), this has two 
+modes, Hash and Time. It moves the files into `.FORGE` folder and it't 
+subdirectories (`.DATA`, `.PROJECT`) if the check in mode is `false`.
+
+### Hash Mode
+
+This mode checks Hash of the file in `./.FORGE/.PROJECT` and in
+`.`, if hash of the file in `.` (main directory) differes from the one in project directory, it compiles it to .o file.
+
+### Time Mode
+
+This mode checks Time of edit of the file in `./.FORGE/.PROJECT` and in
+`.`, if time of the file in `.` (main directory) differes from the one in project directory, it compiles it to .o file.
+
+## Build project
+
+After all files has been compiled into `.o`
+
+## config
+
+Forge has config in file `forge.forgecfg` which is "key value" type of config, where spaces and new line characters split the key and values and saves them. Default config should look like this:
+```plaintext
+hash.value false
+exeName.value app.exe
+```
+
+This type of congig works by having space or new line between keys and values.
+
+### config values
+
+- `hash.value` : This switches between Hash and Time mode to compare the values of files.
+- `exeName.value` : This changes the name of the ouput `.exe` file, you have to end the name with `.exe`.
