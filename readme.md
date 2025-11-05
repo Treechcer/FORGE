@@ -23,7 +23,11 @@ This mode checks Time of edit of the file in `./.FORGE/.PROJECT` and in
 
 ## Build project
 
-After all files has been compiled into `.o` it starts the build process and converts it into `.exe` file, which then is outputed to path where you are exectuing it into.
+After all files has been compiled into `.o` it starts the build process and converts it into `.exe` file, which then is outputed to path where you are exectuing it into. 
+
+### windows specific
+
+It adds `.ico` file to your .exe from what't in the file you have forge saved in. Defualt icon is just now small 16x16 forge and hammer image, you can change it into anything you want.
 
 ## config
 
