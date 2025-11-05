@@ -1,5 +1,21 @@
 # FORGE
 
+## Table of Contents (ToC)
+
+- [FORGE](#forge)
+  - [Table of Contents (ToC)](#table-of-contents-toc)
+  - [intro](#intro)
+  - [How it works?](#how-it-works)
+    - [Hash Mode](#hash-mode)
+    - [Time Mode](#time-mode)
+  - [Build project](#build-project)
+    - [windows specific](#windows-specific)
+  - [config](#config)
+    - [config values](#config-values)
+  - [Installation](#installation)
+    - [Release](#release)
+    - [Compile yourself](#compile-yourself)
+
 ## intro
 
 Forge is multi platform script (Windows and Linux) that compiles C++ code, into `.exe` files effectively.
