@@ -250,11 +250,14 @@ int main() {
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
     std::filesystem::path execFolder = getExecFolder();
-    if (std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
+    if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
         ofs << parser::defaultConfig();
     }
-    std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+
+    if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
+        std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+    }
 
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;

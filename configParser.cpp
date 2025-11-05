@@ -59,7 +59,7 @@ exeName.value app.exe)";
     }
 };
 
-parser p(std::string("forge.forgecfg"));
+parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
 /*std::vector<parser>*/ void config(std::string config) {
     //std::vector<parser> cfg;
