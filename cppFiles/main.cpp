@@ -18,7 +18,7 @@ void compileOne(std::filesystem::path pathAfter);
 void buildPorject(std::vector<std::filesystem::path> pathAfter);
 
 std::filesystem::path FORGEPATH = ".FORGE";
-std::filesystem::path FORGEPROJECTPATH = FORGEPATH / "PROJECT";
+std::filesystem::path FORGEPROJECTPATH = FORGEPATH / ".PROJECT";
 std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
 bool HASH = false;
 
@@ -188,7 +188,11 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
         //std::cout << cmd << std::endl;
-        system(cmd.c_str());
+        int res = system(cmd.c_str());
+        if (res != 0) {
+            std::cout << "Compilation failed, on command: " << cmd;
+            exit(0);
+        }
     }
 }
 
@@ -202,7 +206,11 @@ void compileOne(std::filesystem::path pathAfter) {
     cmd.append(" -o ");
     cmd.append(pathAfter.replace_extension(".o").string());
     //std::cout << cmd << std::endl;
-    system(cmd.c_str());
+    int res = system(cmd.c_str());
+    if (res != 0){
+        std::cout << "Compilation failed, output path: " << pathAfter.string();
+        exit(0);
+    }
 }
 
 bool strToBool(std::string strBool) {
@@ -224,7 +232,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
 #ifdef _WIN32
     std::filesystem::path execFolder = getExecFolder();
     std::filesystem::path rcFile = execFolder.parent_path() / "windowsResources" / "resources.rc";
-    std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / "PROJECT" / "resources.o";
+    std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / ".PROJECT" / "resources.o";
 
     if (std::filesystem::exists(rcFile)) {
         //std::cout << execFolder << "\n" << rcFile << "\n" << objFile << "\n";
@@ -232,7 +240,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
         cmd.append(rcFile.string() + " ");
         cmd.append(objFile.string());
         //std::cout << cmd;
-        system(cmd.c_str());
+        int res = system(cmd.c_str());
+        if (res != 0) {
+            std::cout << "Compilation failed, output path: " << rcFile;
+            exit(0);
+        }
         allObJs.append(objFile.string() + " ");
     }
 #endif
@@ -241,7 +253,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     std::string appName = cfgVals("exeName");
     std::string cmd = "g++ " + allObJs + "-o " + appName;
     //std::cout << cmd;
-    system(cmd.c_str());
+    int res = system(cmd.c_str());
+    if (res != 0) {
+        std::cout << "Compilation failed, on command : " << cmd;
+        exit(0);
+    }
     //std::cout << cmd;
 }
 
@@ -290,7 +306,7 @@ int main() {
     //    std::cout << changedPaths[i].extension();
     //}
 
-    std::cout << "FINISHED";
+    std::cout << "FINISHED " << cfgVals("exeName");
 
     return 0;
 }

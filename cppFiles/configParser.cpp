@@ -37,12 +37,16 @@ exeName.value app.exe)";
     }
 
     static void createFiles(std::filesystem::path file, std::string value) {
-        std::filesystem::path wholePath = ".\\.FORGE\\\\.DATA" / file;
+        std::filesystem::path wholePath = (std::filesystem::path) "." / ".FORGE" / ".DATA" / file;
         std::filesystem::create_directories(wholePath.parent_path());
 
-        std::ofstream ofs(wholePath);
-        ofs << value;
-        ofs.close();
+        //now it only crates the file that doesn't exists... which is not perfect for config but whatever
+
+        if (!std::filesystem::exists(wholePath)){
+            std::ofstream ofs(wholePath);
+            ofs << value;
+            ofs.close();
+        }
     }
 
     static std::string variableValueCreator(std::string valueName) {
