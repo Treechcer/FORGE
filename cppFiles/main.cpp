@@ -1,4 +1,4 @@
-#include "configParser.h"
+#include "../headers/configParser.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -223,7 +223,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
 
 #ifdef _WIN32
     std::filesystem::path execFolder = getExecFolder();
-    std::filesystem::path rcFile = execFolder.parent_path() / "resources.rc";
+    std::filesystem::path rcFile = execFolder.parent_path() / "windowsResources" / "resources.rc";
     std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / "PROJECT" / "resources.o";
 
     if (std::filesystem::exists(rcFile)) {
