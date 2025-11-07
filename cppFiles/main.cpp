@@ -271,10 +271,13 @@ int main(int argc, char *argv[]) {
     std::filesystem::path currentDir = std::filesystem::current_path();
     std::filesystem::path outputPath = std::filesystem::current_path().parent_path();
 
+    std::filesystem::path execFolder = getExecFolder();
+
     for (int i = 0; i < argc; i++) {
         std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
         if (cmd == "-update"){
+            std::filesystem::current_path(execFolder);
             update("g++", argv[0]);
             std::filesystem::current_path(currentDir);
         }
@@ -284,7 +287,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    std::filesystem::path execFolder = getExecFolder();
     if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
         ofs << parser::defaultConfig();
