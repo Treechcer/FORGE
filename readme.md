@@ -40,7 +40,9 @@ store the subdirectories, called `.DATA` and `.PROJECT`.
 
 `.DATA` is to store your
 config, if you want to change anything in it just go there. `.PROJECT` stores all
-the C++, header and object files.
+the C++, header and object files. `.UPDATE` is folder to compile the newest version of
+forge, you can delete it after update, forge can't easily do that so I just
+didn't do it.
 
 > **NOTE**: the folder structure is always imitated in `.FORGE/.PROJECT` so
 > linking header files should work without any errors.
@@ -78,6 +80,9 @@ This type of config works by having space or new line between keys and values.
 
 - `hash.value` : This switches between Hash and Time mode to compare the values of files.
 - `exeName.value` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
+- `compileCommand.value` : This choses your your command for compiling.
+
+> Note: if you change it from g++ to something else, you should have in mind that the compilation might not work if you use other compiler. That command looks like this (default): `g++ -c file1.cpp file1.cpp -o app.exe` this is mostly used if you remap your g++ command to something else.
 
 ## Usage
 

@@ -5,22 +5,26 @@
 #include <string>
 #include <vector>
 
+void config(std::string config);
+
 class parser {
     public:
     std::filesystem::path fileName;
     std::string content;
     parser(std::filesystem::path fileName) {
         if (fileName.extension() != ".forgecfg") {
-            //std::cout << "incorrect file extension";
             std::exit(1);
         }
 
         this->fileName = fileName;
         std::ifstream ifs(fileName);
 
-        if (!ifs.is_open()){
+        if (!ifs.is_open()) {
             std::ofstream ofs(fileName);
             ofs << parser::defaultConfig();
+            ofs.close();
+
+            ifs.open(fileName);
         }
 
         std::stringstream ss;
@@ -28,13 +32,13 @@ class parser {
         content = ss.str();
         ifs.close();
 
-        this->content = content;
+        config(this->content);
     }
 
-    static std::string defaultConfig(){
+    static std::string defaultConfig() {
         return R"(hash.value false
 exeName.value app.exe
-compileCommand g++)";
+compileCommand.value g++)";
     }
 
     static void createFiles(std::filesystem::path file, std::string value) {
@@ -43,11 +47,13 @@ compileCommand g++)";
 
         //now it only crates the file that doesn't exists... which is not perfect for config but whatever
 
-        if (!std::filesystem::exists(wholePath)){
+        // idk I like this
+
+        //if (!std::filesystem::exists(wholePath)) {
             std::ofstream ofs(wholePath);
             ofs << value;
             ofs.close();
-        }
+        //}
     }
 
     static std::string variableValueCreator(std::string valueName) {
@@ -56,7 +62,7 @@ compileCommand g++)";
         std::stringstream buffer;
         buffer << ifs.rdbuf();
         //std::cout << path;
-        if (buffer.str() == ""){
+        if (buffer.str() == "") {
             //std::cout << "file is empty or doesn't exist";
             std::exit(1);
         }
@@ -66,7 +72,7 @@ compileCommand g++)";
 
 parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
-/*std::vector<parser>*/ void config(std::string config) {
+/*std::vector<parser>*/ void config(std::string config){
     //std::vector<parser> cfg;
     bool wasSpace = false;
     std::string values[2];
@@ -108,6 +114,6 @@ void create() {
     config(p.content);
 }
 
-std::string cfgVals(std::string value){
+std::string cfgVals(std::string value) {
     return parser::variableValueCreator(value);
 }

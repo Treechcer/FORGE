@@ -260,7 +260,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         std::cout << "Compilation failed, on command : " << cmd;
         exit(0);
     }
-    //std::cout << cmd;
+    //std::cout << cmd << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -269,12 +269,12 @@ int main(int argc, char *argv[]) {
     std::filesystem::create_directory(FORGEDATAPATH);
 
     std::filesystem::path currentDir = std::filesystem::current_path();
-    std::filesystem::path outputPath = std::filesystem::current_path().parent_path();
+    std::filesystem::path outputPath = "";
 
     std::filesystem::path execFolder = getExecFolder();
 
     for (int i = 0; i < argc; i++) {
-        std::cout << argv[i] << " " << i << std::endl;
+        //std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
         if (cmd == "-update"){
             std::filesystem::current_path(execFolder);
