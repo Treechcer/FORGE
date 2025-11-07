@@ -33,7 +33,8 @@ class parser {
 
     static std::string defaultConfig(){
         return R"(hash.value false
-exeName.value app.exe)";
+exeName.value app.exe
+compileCommand g++)";
     }
 
     static void createFiles(std::filesystem::path file, std::string value) {

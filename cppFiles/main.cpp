@@ -1,4 +1,5 @@
 #include "../headers/configParser.h"
+#include  "../headers/inputFuncs.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -219,7 +220,7 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
-void buildPorject(std::vector<std::filesystem::path> pathAfter) {
+void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path outputPath) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
         if (pathAfter[i].extension() == ".h") {
@@ -251,7 +252,8 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
 
     //std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
-    std::string cmd = "g++ " + allObJs + "-o " + appName;
+    std::string cmd = "g++ " + allObJs + "-o ";
+    cmd.append((outputPath / appName).string());
     //std::cout << cmd;
     int res = system(cmd.c_str());
     if (res != 0) {
@@ -261,10 +263,27 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter) {
     //std::cout << cmd;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     std::filesystem::create_directory(FORGEPATH);
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
+
+    std::filesystem::path currentDir = std::filesystem::current_path();
+    std::filesystem::path outputPath = std::filesystem::current_path().parent_path();
+
+    for (int i = 0; i < argc; i++) {
+        std::cout << argv[i] << " " << i << std::endl;
+        std::string cmd = argv[i];
+        if (cmd == "-update"){
+            update("g++", argv[0]);
+            std::filesystem::current_path(currentDir);
+        }
+        else if(cmd == "-path"){
+            outputPath = argv[i + 1];
+            i++;
+        }
+    }
+
     std::filesystem::path execFolder = getExecFolder();
     if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
@@ -300,7 +319,7 @@ int main() {
 
     //compileAll(changedPaths);
 
-    buildPorject(changedPaths);
+    buildPorject(changedPaths, outputPath);
 
     //for (int i = 0; i < changedPaths.size(); i++){
     //    std::cout << changedPaths[i].extension();
