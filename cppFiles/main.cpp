@@ -252,6 +252,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
     //std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
+    if (!appName.empty() && appName.back() == '\r') {
+        appName.pop_back();
+    }
 #if defined(__linux__)
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
 #endif
