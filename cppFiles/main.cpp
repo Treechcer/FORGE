@@ -252,6 +252,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
     //std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
+#if defined(__linux__)
+    appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
+#endif
     std::string cmd = "g++ " + allObJs + "-o ";
     cmd.append((outputPath / appName).string());
     //std::cout << cmd;
