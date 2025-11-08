@@ -5,7 +5,7 @@
 - [FORGE](#forge)
   - [Table of Contents (ToC)](#table-of-contents-toc)
   - [intro](#intro)
-  - [Supported platforms](#supported-platforms)
+  - [Tested platforms](#tested-platforms)
   - [How it works?](#how-it-works)
   - [Folders](#folders)
     - [Hash Mode](#hash-mode)
@@ -25,15 +25,18 @@
 Forge is multi platform script (Windows and Linux) that compiles C++ code, into `.exe` files effectively. Forge uses g++ to compile to .exe, you have to have g++ to use this, without
 it, it'll not work.
 
-## Supported platforms
+## Tested platforms
 
 Here are my tests and on what kind of hardware they were running on. Because I'm working on multi platform script, all major platform that won't work will be fixed, at least I'll try to.
 
-| platform | version     | hardware                                                             | status | note                                                                                                                              |
-|----------|-------------|----------------------------------------------------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------|
-| windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | ✅      | Runs normally / as expected                                                                                                       |
-| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | ⚠️     | Runs and compiles normally, but linux doesn't natively run .exe files, which default output of FORGE for now, it'll be fixed soon |
-|          |             |                                                                      |        |                                                                                                                                   |
+| platform | version     | hardware                                                             | status | note                                                     |
+|----------|-------------|----------------------------------------------------------------------|--------|----------------------------------------------------------|
+| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | ✅      | Runs normally / as expected and everything seems to work |
+| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | ✅      | Runs normally / as expected and everything seems to work |
+| Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | ❔      | Not yet tested                                           |
+| Windows  | 7           | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | ❔      | Not yet tested                                           |
+| mac OS   | ---         | ---                                                                  | ❔      | Not yet tested                                           |
+
 
 > NOTE: the test for determining if it works is compiling this script and then running it.
 
