@@ -277,9 +277,29 @@ int main(int argc, char *argv[]) {
         //std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
         if (cmd == "-update"){
-            std::filesystem::current_path(execFolder);
-            update("g++", argv[0]);
-            std::filesystem::current_path(currentDir);
+            if (argv[i + 1] == "unstable"){
+                std::filesystem::current_path(execFolder);
+                update("g++", argv[0]);
+                std::filesystem::current_path(currentDir);
+                i++;
+            }
+            else if (argv[i + 1] == "stable"){
+                bool found = false;
+                std::string ver;
+                for (int u = 0; u < argc; u++){
+                    if (argv[u] == "version"){
+                        found = true;
+                        ver = argv[u + 1];
+                        break;
+                    }
+                }
+
+                //TODO add download for stable version but today I'm lazyyy
+
+            }
+            else if (std::regex_match(argv[i + 1], std::regex("^-"))) {
+                i++;
+            }
         }
         else if(cmd == "-path"){
             outputPath = argv[i + 1];
