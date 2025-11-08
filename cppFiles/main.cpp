@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
                 bool found = false;
                 std::string ver;
                 for (int u = 0; u < argc; u++){
-                    if (argv[u] == "version"){
+                    if (argv[u] == "-version"){
                         found = true;
                         ver = argv[u + 1];
                         break;
@@ -295,6 +295,13 @@ int main(int argc, char *argv[]) {
                 }
 
                 //TODO add download for stable version but today I'm lazyyy
+
+                //git clone => error if it exists, I don't feel like doing this, not worth it, unstable is fine ig
+
+                //if (found){
+                //    std::string cmd;
+                //    cmd = "git clone branch " + ver + " --depth 1 https://github.com/Treechcer/FORGE /.FORGE/.UPDATE";
+                //}
 
             }
             else if (std::regex_match(argv[i + 1], std::regex("^-"))) {
