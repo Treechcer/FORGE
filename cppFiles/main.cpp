@@ -1,5 +1,6 @@
 #include "../headers/configParser.h"
-#include  "../headers/inputFuncs.h"
+#include "../headers/inputFuncs.h"
+#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -80,9 +81,9 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
     return paths;
 }
 
-void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter){
+void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
     for (int i = 0; i < pathAfter.size(); i++) {
-        if (!(pathAfter[i].extension() == ".h")){
+        if (!(pathAfter[i].extension() == ".h")) {
             continue;
         }
         bool copy = false;
@@ -124,7 +125,7 @@ void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<
     }
 }
 
-    int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
+int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
     if (pathAfter.size() != pathBefore.size()) {
         return 1;
     }
@@ -208,7 +209,7 @@ void compileOne(std::filesystem::path pathAfter) {
     cmd.append(pathAfter.replace_extension(".o").string());
     //std::cout << cmd << std::endl;
     int res = system(cmd.c_str());
-    if (res != 0){
+    if (res != 0) {
         std::cout << "Compilation failed, output path: " << pathAfter.string();
         exit(0);
     }
@@ -270,6 +271,10 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 }
 
 int main(int argc, char *argv[]) {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    //std::cout << "start: " << ms << std::endl;
+
     std::filesystem::create_directory(FORGEPATH);
     std::filesystem::create_directory(FORGEPROJECTPATH);
     std::filesystem::create_directory(FORGEDATAPATH);
@@ -282,18 +287,18 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < argc; i++) {
         //std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
-        if (cmd == "-update"){
-            if (argv[i + 1] == "unstable"){
+        if (cmd == "-update") {
+            if (argv[i + 1] == "unstable") {
                 std::filesystem::current_path(execFolder);
                 update("g++", argv[0]);
                 std::filesystem::current_path(currentDir);
                 i++;
             }
-            else if (argv[i + 1] == "stable"){
+            else if (argv[i + 1] == "stable") {
                 bool found = false;
                 std::string ver;
-                for (int u = 0; u < argc; u++){
-                    if (argv[u] == "-version"){
+                for (int u = 0; u < argc; u++) {
+                    if (argv[u] == "-version") {
                         found = true;
                         ver = argv[u + 1];
                         break;
@@ -308,13 +313,12 @@ int main(int argc, char *argv[]) {
                 //    std::string cmd;
                 //    cmd = "git clone branch " + ver + " --depth 1 https://github.com/Treechcer/FORGE /.FORGE/.UPDATE";
                 //}
-
             }
             else if (std::regex_match(argv[i + 1], std::regex("^-"))) {
                 i++;
             }
         }
-        else if(cmd == "-path"){
+        else if (cmd == "-path") {
             outputPath = argv[i + 1];
             i++;
         }
@@ -338,7 +342,7 @@ int main(int argc, char *argv[]) {
     //system(("windres " + (execFolder.parent_path() / "resources.rc").string()(execFolder.parent_path() / "resources.rc").string() + "./.FORGE/PROJECT/resources.o").c_str());
     SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
-    
+
     create();
 
     HASH = strToBool(cfgVals("hash"));
@@ -361,7 +365,12 @@ int main(int argc, char *argv[]) {
     //    std::cout << changedPaths[i].extension();
     //}
 
-    std::cout << "FINISHED " << cfgVals("exeName");
+    std::cout << "FINISHED " << cfgVals("exeName") << std::endl;
+
+    auto endTime = std::chrono::system_clock::now();
+    auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
+    std::cout << "time (ms): " << (msEnd - ms) << std::endl;
+    std::cout << "time (s): " << double (msEnd - ms) / 1000 << std::endl;
 
     return 0;
 }
