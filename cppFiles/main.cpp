@@ -327,6 +327,7 @@ int main(int argc, char *argv[]) {
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
         std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        create();
     }
 
     std::vector<std::filesystem::path> paths;
