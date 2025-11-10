@@ -1,4 +1,4 @@
-#include "..\headers\configParser.h"
+#include "../headers/configParser.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
