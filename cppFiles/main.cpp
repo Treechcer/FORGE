@@ -367,10 +367,11 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             for (int j = 0; j < timesMS.size(); j++){
                 sum += timesMS[j];
             }
-
             double avg = sum / std::stoi(argv[i + 1]);
             std::cout << "average time (ms): " << avg << std::endl;
-            std::cout << "average time (s): " << avg / 1000 << std::endl;
+            std::cout << "average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
+            std::cout << "total time (ms): " << sum << std::endl;
+            std::cout << "total time (s): " << std::ceil(((double) sum / 1000) * 100) / 100 << std::endl;
             parser::variableRewrite("exeName", nameBefore);
             return 1;
         }
