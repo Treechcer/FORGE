@@ -1,3 +1,4 @@
+#include "..\headers\configParser.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -7,72 +8,67 @@
 
 void config(std::string config);
 
-class parser {
-    public:
-    std::filesystem::path fileName;
-    std::string content;
-    parser(std::filesystem::path fileName) {
-        if (fileName.extension() != ".forgecfg") {
-            std::exit(1);
-        }
-
-        this->fileName = fileName;
-        std::ifstream ifs(fileName);
-
-        if (!ifs.is_open()) {
-            std::ofstream ofs(fileName);
-            ofs << parser::defaultConfig();
-            ofs.close();
-
-            ifs.open(fileName);
-        }
-
-        std::stringstream ss;
-        ss << ifs.rdbuf();
-        content = ss.str();
-        ifs.close();
-
-        config(this->content);
+parser::parser(std::filesystem::path fileName) {
+    if (fileName.extension() != ".forgecfg") {
+        std::exit(1);
     }
 
-    static std::string defaultConfig() {
-        return R"(hash.value false
+    this->fileName = fileName;
+    std::ifstream ifs(fileName);
+
+    if (!ifs.is_open()) {
+        std::ofstream ofs(fileName);
+        ofs << parser::defaultConfig();
+        ofs.close();
+
+        ifs.open(fileName);
+    }
+
+    std::stringstream ss;
+    ss << ifs.rdbuf();
+    content = ss.str();
+    ifs.close();
+
+    config(this->content);
+}
+
+std::string parser::defaultConfig() {
+    return R"(hash.value false
 exeName.value app.exe
 compileCommand.value g++)";
+}
+
+void parser::createFiles(std::filesystem::path file, std::string value) {
+    std::filesystem::path wholePath = (std::filesystem::path) "." / ".FORGE" / ".DATA" / file;
+    std::filesystem::create_directories(wholePath.parent_path());
+
+    std::ofstream ofs(wholePath);
+    ofs << value;
+    ofs.close();
+}
+
+std::string parser::variableValueCreator(std::string valueName) {
+    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
+    std::ifstream ifs(path);
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+
+    if (buffer.str() == "") {
+        std::exit(1);
     }
+    return buffer.str();
+}
 
-    static void createFiles(std::filesystem::path file, std::string value) {
-        std::filesystem::path wholePath = (std::filesystem::path) "." / ".FORGE" / ".DATA" / file;
-        std::filesystem::create_directories(wholePath.parent_path());
-
-        //now it only crates the file that doesn't exists... which is not perfect for config but whatever
-
-        // idk I like this
-
-        //if (!std::filesystem::exists(wholePath)) {
-            std::ofstream ofs(wholePath);
-            ofs << value;
-            ofs.close();
-        //}
-    }
-
-    static std::string variableValueCreator(std::string valueName) {
-        std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
-        std::ifstream ifs(path);
-        std::stringstream buffer;
-        buffer << ifs.rdbuf();
-        //std::cout << path;
-        if (buffer.str() == "") {
-            //std::cout << "file is empty or doesn't exist";
-            std::exit(1);
-        }
-        return buffer.str();
-    }
-};
+void parser::variableRewrite(std::string valueName, std::string value) {
+    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
+    std::ofstream ofs(path);
+    ofs << value;
+    ofs.close();
+}
 
 parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
-/*std::vector<parser>*/ void config(std::string config){
+/*std::vector<parser>*/ void config(std::string config) {
     //std::vector<parser> cfg;
     bool wasSpace = false;
     std::string values[2];

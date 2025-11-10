@@ -8,6 +8,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -18,11 +19,13 @@
 
 void compileOne(std::filesystem::path pathAfter);
 void buildPorject(std::vector<std::filesystem::path> pathAfter);
+void creatingProject(bool writeOutEnd);
 
 std::filesystem::path FORGEPATH = ".FORGE";
 std::filesystem::path FORGEPROJECTPATH = FORGEPATH / ".PROJECT";
 std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
 bool HASH = false;
+std::filesystem::path OUTPUTPATH = "";
 
 size_t hashString(std::string toHash) {
     std::string text = toHash;
@@ -221,7 +224,7 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
-void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path outputPath) {
+void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
         if (pathAfter[i].extension() == ".h") {
@@ -258,9 +261,14 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     }
 #if defined(__linux__)
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
+#elif defined(_WIN32)
+    if (!std::regex_match(appName, std::regex("\\.exe$"))){
+        appName.append(".exe");
+    }
 #endif
+    
     std::string cmd = "g++ " + allObJs + "-o ";
-    cmd.append((outputPath / appName).string());
+    cmd.append((OUTPUTPATH / appName).string());
     //std::cout << cmd;
     int res = system(cmd.c_str());
     if (res != 0) {
@@ -270,20 +278,8 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     //std::cout << cmd << std::endl;
 }
 
-int main(int argc, char *argv[]) {
-    auto now = std::chrono::system_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-    //std::cout << "start: " << ms << std::endl;
-
-    std::filesystem::create_directory(FORGEPATH);
-    std::filesystem::create_directory(FORGEPROJECTPATH);
-    std::filesystem::create_directory(FORGEDATAPATH);
-
-    std::filesystem::path currentDir = std::filesystem::current_path();
-    std::filesystem::path outputPath = "";
-
+int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
     std::filesystem::path execFolder = getExecFolder();
-
     for (int i = 0; i < argc; i++) {
         //std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
@@ -319,9 +315,117 @@ int main(int argc, char *argv[]) {
             }
         }
         else if (cmd == "-path") {
-            outputPath = argv[i + 1];
+            OUTPUTPATH = argv[i + 1];
             i++;
         }
+        else if (cmd == "-timeTest"){
+
+            if (i + 1 >= argc){
+                std::cout << "you have to have another numeric argument after -timeTest";
+                return 1;
+            }
+
+            if (!(std::stoi(argv[i + 1]) > 0)){
+                std::cout << "-timeTest has to have number after it";
+                return 1;
+            }
+            
+            std::string nameBefore = parser::variableValueCreator("exeName");
+            parser::variableRewrite("exeName", "timeTest");
+            std::cout << "TimeTest Start now" << std::endl;
+
+            std::vector <int> timesMS;
+
+            for (int j = 0; j < std::stoi(argv[i + 1]); j++){
+                auto now = std::chrono::system_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+
+                creatingProject(false);
+
+                auto endTime = std::chrono::system_clock::now();
+                auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
+                std::cout << "time (ms): " << (msEnd - ms) << std::endl;
+                std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
+                //std::cout << "compiled times: " << j + 1 << std::endl;
+
+                int totalRuns = std::stoi(argv[i + 1]);
+                int done = j + 1;
+
+                int made = (done * 10) / totalRuns;
+                int notMade = 10 - made;
+                std::string outBar = "[";
+                outBar += std::string(made, '#');
+                outBar += std::string(notMade, '-');
+                outBar.append("]");
+
+                std::cout << std::ceil(((double) done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
+
+                timesMS.push_back(msEnd - ms);
+            }
+
+            int sum = 0;
+            for (int j = 0; j < timesMS.size(); j++){
+                sum += timesMS[j];
+            }
+
+            double avg = sum / std::stoi(argv[i + 1]);
+            std::cout << "average time (ms): " << avg << std::endl;
+            std::cout << "average time (s): " << avg / 1000 << std::endl;
+            parser::variableRewrite("exeName", nameBefore);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void createDirs() {
+    std::filesystem::create_directory(FORGEPATH);
+    std::filesystem::create_directory(FORGEPROJECTPATH);
+    std::filesystem::create_directory(FORGEDATAPATH);
+}
+
+void creatingProject(bool writeOutEnd = true) {
+    std::vector<std::filesystem::path> paths;
+    std::vector<std::filesystem::path> changedPaths;
+    std::filesystem::path thisDir = ".";
+    paths = getFiles(thisDir, paths);
+
+    changedPaths = changePaths(paths);
+    copyHeaderFiles(paths, changedPaths);
+    int status = copyFiles(paths, changedPaths);
+
+    if (status == 1) {
+        return;
+    }
+
+    //compileAll(changedPaths);
+
+    buildPorject(changedPaths, OUTPUTPATH);
+
+    //for (int i = 0; i < changedPaths.size(); i++){
+    //    std::cout << changedPaths[i].extension();
+    //}
+    if (writeOutEnd){
+        std::cout << "FINISHED " << cfgVals("exeName") << std::endl;
+    }
+}
+
+int main(int argc, char *argv[]) {
+    auto now = std::chrono::system_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    //std::cout << "start: " << ms << std::endl;
+
+    createDirs();
+
+    std::filesystem::path currentDir = std::filesystem::current_path();
+
+    std::filesystem::path execFolder = getExecFolder();
+
+    int inputStatus = checkInputs(argc, argv, currentDir);
+
+    if (inputStatus == 1) {
+        return 0;
     }
 
     if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
@@ -334,9 +438,6 @@ int main(int argc, char *argv[]) {
         create();
     }
 
-    std::vector<std::filesystem::path> paths;
-    std::vector<std::filesystem::path> changedPaths;
-    std::filesystem::path thisDir = ".";
     std::filesystem::create_directory(FORGEPATH);
 #ifdef _WIN32
     //system(("windres " + (execFolder.parent_path() / "resources.rc").string()(execFolder.parent_path() / "resources.rc").string() + "./.FORGE/PROJECT/resources.o").c_str());
@@ -347,25 +448,7 @@ int main(int argc, char *argv[]) {
 
     HASH = strToBool(cfgVals("hash"));
 
-    paths = getFiles(thisDir, paths);
-
-    changedPaths = changePaths(paths);
-    copyHeaderFiles(paths, changedPaths);
-    int status = copyFiles(paths, changedPaths);
-
-    if (status == 1) {
-        return 0;
-    }
-
-    //compileAll(changedPaths);
-
-    buildPorject(changedPaths, outputPath);
-
-    //for (int i = 0; i < changedPaths.size(); i++){
-    //    std::cout << changedPaths[i].extension();
-    //}
-
-    std::cout << "FINISHED " << cfgVals("exeName") << std::endl;
+    creatingProject();
 
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
