@@ -29,15 +29,15 @@ it, it'll not work.
 
 Here are my tests and on what kind of hardware they were running on. Because I'm working on multi platform script, all major platform that won't work will be fixed, at least I'll try to.
 
-| platform | version     | hardware                                                             | avg. time (s) | total time (s) status | note |                                                          |
-|----------|-------------|----------------------------------------------------------------------|---------------|-----------------------|------|----------------------------------------------------------|
-| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.1           |                       | ✅    | Runs normally / as expected and everything seems to work |
-| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.7          | 617.41                | ✅    | Runs normally / as expected and everything seems to work |
-| Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                       | ❔    | Not yet tested                                           |
-| Windows  | 7           | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                       | ❔    | Not yet tested                                           |
-| mac OS   | ---         | ---                                                                  |               |                       | ❔    | Not yet tested                                           |
+| platform | version     | hardware                                                             | avg. time (s) | total time (s) | status | note                                                     |
+|----------|-------------|----------------------------------------------------------------------|---------------|----------------|--------|----------------------------------------------------------|
+| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.1           |                | ✅      | Runs normally / as expected and everything seems to work |
+| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.7          | 617.41         | ✅      | Runs normally / as expected and everything seems to work |
+| Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                | ❔      | Not yet tested                                           |
+| Windows  | 7           | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                | ❔      | Not yet tested                                           |
+| mac OS   | ---         | ---                                                                  |               |                | ❔      | Not yet tested                                           |
 
-> NOTE: the test for determining if it works is compiling this script and then running it. Also the average time is taken from mode `-timeTest 25` and then added as avg. time (s) and as total time.
+> NOTE: the test for determining if it works is compiling this script and then running it. Also the average time is taken from mode `-timeTest 25` and then added as avg. time (s) and as total time (or just compiling this script 25 times).
 
 ## How it works?
 

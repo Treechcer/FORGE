@@ -373,6 +373,9 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             std::cout << "total time (ms): " << sum << std::endl;
             std::cout << "total time (s): " << std::ceil(((double) sum / 1000) * 100) / 100 << std::endl;
             parser::variableRewrite("exeName", nameBefore);
+
+            std::filesystem::remove("timeTest.exe");
+
             return 1;
         }
     }
