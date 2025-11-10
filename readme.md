@@ -31,7 +31,7 @@ Here are my tests and on what kind of hardware they were running on. Because I'm
 
 | platform | version     | hardware                                                             | avg. time (s) | total time (s) | status | note                                                     |
 |----------|-------------|----------------------------------------------------------------------|---------------|----------------|--------|----------------------------------------------------------|
-| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.1           |                | ✅      | Runs normally / as expected and everything seems to work |
+| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.06          | 101.49         | ✅      | Runs normally / as expected and everything seems to work |
 | Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.7          | 617.41         | ✅      | Runs normally / as expected and everything seems to work |
 | Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                | ❔      | Not yet tested                                           |
 | Windows  | 7           | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         |               |                | ❔      | Not yet tested                                           |
