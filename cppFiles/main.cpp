@@ -1,14 +1,16 @@
 #include "../headers/configParser.h"
 #include "../headers/inputFuncs.h"
 #include <chrono>
+#include <cmath>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <regex>
 #include <string>
+#include <thread>
 #include <vector>
-#include <cmath>
+
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -21,11 +23,15 @@ void compileOne(std::filesystem::path pathAfter);
 void buildPorject(std::vector<std::filesystem::path> pathAfter);
 void creatingProject(bool writeOutEnd);
 
+std::vector<std::thread> threads;
+std::vector<std::filesystem::path> pathToCompile;
+
 std::filesystem::path FORGEPATH = ".FORGE";
 std::filesystem::path FORGEPROJECTPATH = FORGEPATH / ".PROJECT";
 std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
 bool HASH = false;
 std::filesystem::path OUTPUTPATH = "";
+int THREADNUMBER = 4;
 
 size_t hashString(std::string toHash) {
     std::string text = toHash;
@@ -50,6 +56,51 @@ std::filesystem::path getExecFolder() {
     }
 #endif
     return {};
+}
+
+void compileN(std::vector<std::filesystem::path> pathAfter) {
+    for (int i = 0; i < pathAfter.size(); i++) {
+
+        if (pathAfter[i].extension() == ".h") {
+            continue;
+        }
+
+        std::string cmd = "g++ -c ";
+        cmd.append(pathAfter[i].string());
+        cmd.append(" -o ");
+        cmd.append(pathAfter[i].replace_extension(".o").string());
+        //std::cout << cmd << std::endl;
+        int res = system(cmd.c_str());
+        if (res != 0) {
+            std::cout << "Compilation failed, output path: " << pathAfter[i].string();
+            exit(0);
+        }
+
+        std::cout << cmd << " ??????" << std::endl ;
+    }
+}
+
+void compileWithThread() {
+    int filePerThread = std::ceil((double)pathToCompile.size() / THREADNUMBER);
+    std::cout << filePerThread;
+    std::vector<std::filesystem::path> tempFiles;
+    for (int i = 0; i < pathToCompile.size(); i++) {
+        tempFiles.push_back(pathToCompile[i]);
+        if ((tempFiles.size()) % filePerThread == 0) {
+            //std::thread t (compileN, tempFiles);
+            threads.push_back(std::thread(compileN, std::vector<std::filesystem::path>(tempFiles)));
+            tempFiles.clear();
+        }
+    }
+
+    if (!tempFiles.empty()) {
+        threads.push_back(std::thread(compileN, std::vector<std::filesystem::path>(tempFiles)));
+        tempFiles.clear();
+    }
+
+    for (auto &thread : threads) {
+        thread.join();
+    }
 }
 
 std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths) {
@@ -123,7 +174,8 @@ void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<
             std::filesystem::create_directories(pathAfter[i].parent_path());
             std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
 
-            compileOne(pathAfter[i]);
+            pathToCompile.push_back(pathAfter[i]);
+            //compileOne(pathAfter[i]);
         }
     }
 }
@@ -170,7 +222,8 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
             std::filesystem::create_directories(pathAfter[i].parent_path());
             std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
 
-            compileOne(pathAfter[i]);
+            pathToCompile.push_back(pathAfter[i]);
+            //compileOne(pathAfter[i]);
         }
     }
 
@@ -229,7 +282,6 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     for (int i = 0; i < pathAfter.size(); i++) {
         if (pathAfter[i].extension() == ".h") {
             continue;
-            ;
         }
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
@@ -262,11 +314,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 #if defined(__linux__)
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
 #elif defined(_WIN32)
-    if (!std::regex_match(appName, std::regex("\\.exe$"))){
+    if (!std::regex_match(appName, std::regex("\\.exe$"))) {
         appName.append(".exe");
     }
 #endif
-    
+
     std::string cmd = "g++ " + allObJs + "-o ";
     cmd.append((OUTPUTPATH / appName).string());
     //std::cout << cmd;
@@ -318,25 +370,25 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             OUTPUTPATH = argv[i + 1];
             i++;
         }
-        else if (cmd == "-timeTest"){
+        else if (cmd == "-timeTest") {
 
-            if (i + 1 >= argc){
+            if (i + 1 >= argc) {
                 std::cout << "you have to have another numeric argument after -timeTest";
                 return 1;
             }
 
-            if (!(std::stoi(argv[i + 1]) > 0)){
+            if (!(std::stoi(argv[i + 1]) > 0)) {
                 std::cout << "-timeTest has to have number after it";
                 return 1;
             }
-            
+
             std::string nameBefore = parser::variableValueCreator("exeName");
             parser::variableRewrite("exeName", "timeTest");
             std::cout << "TimeTest Start now" << std::endl;
 
-            std::vector <int> timesMS;
+            std::vector<int> timesMS;
 
-            for (int j = 0; j < std::stoi(argv[i + 1]); j++){
+            for (int j = 0; j < std::stoi(argv[i + 1]); j++) {
                 auto now = std::chrono::system_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
 
@@ -358,25 +410,32 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 outBar += std::string(notMade, '-');
                 outBar.append("]");
 
-                std::cout << std::ceil(((double) done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
+                std::cout << std::ceil(((double)done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
 
                 timesMS.push_back(msEnd - ms);
             }
 
             int sum = 0;
-            for (int j = 0; j < timesMS.size(); j++){
+            for (int j = 0; j < timesMS.size(); j++) {
                 sum += timesMS[j];
             }
             double avg = sum / std::stoi(argv[i + 1]);
             std::cout << "average time (ms): " << avg << std::endl;
             std::cout << "average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
             std::cout << "total time (ms): " << sum << std::endl;
-            std::cout << "total time (s): " << std::ceil(((double) sum / 1000) * 100) / 100 << std::endl;
+            std::cout << "total time (s): " << std::ceil(((double)sum / 1000) * 100) / 100 << std::endl;
             parser::variableRewrite("exeName", nameBefore);
 
             std::filesystem::remove("timeTest.exe");
 
             return 1;
+        }
+        else if (cmd == "-thread") {
+            if (std::stoi(argv[i + 1]) < 1) {
+                std::cout << "You can't have less than 1 threads";
+                return 1;
+            }
+            THREADNUMBER = std::stoi(argv[i + 1]);
         }
     }
 
@@ -405,12 +464,14 @@ void creatingProject(bool writeOutEnd = true) {
 
     //compileAll(changedPaths);
 
+    compileWithThread();
+
     buildPorject(changedPaths, OUTPUTPATH);
 
     //for (int i = 0; i < changedPaths.size(); i++){
     //    std::cout << changedPaths[i].extension();
     //}
-    if (writeOutEnd){
+    if (writeOutEnd) {
         std::cout << "FINISHED " << cfgVals("exeName") << std::endl;
     }
 }
@@ -457,7 +518,7 @@ int main(int argc, char *argv[]) {
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
     std::cout << "time (ms): " << (msEnd - ms) << std::endl;
-    std::cout << "time (s): " << double (msEnd - ms) / 1000 << std::endl;
+    std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
 
     return 0;
 }
