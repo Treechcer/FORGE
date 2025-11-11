@@ -76,7 +76,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             exit(0);
         }
 
-        //std::cout << cmd << " ??????" << std::endl ;
+        std::cout << cmd << " ??????" << std::endl ;
     }
 }
 
@@ -101,6 +101,8 @@ void compileWithThread() {
     for (auto &thread : threads) {
         thread.join();
     }
+
+    threads.clear();
 }
 
 std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths) {
@@ -386,7 +388,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
             std::string nameBefore = parser::variableValueCreator("exeName");
             parser::variableRewrite("exeName", "timeTest");
-            std::cout << "TimeTest Start now, max threads" << THREADNUMBER << std::endl;
+            std::cout << "TimeTest Start now, max threads " << THREADNUMBER << std::endl;
 
             std::vector<int> timesMS;
         
@@ -456,6 +458,8 @@ void createDirs() {
 }
 
 void creatingProject(bool writeOutEnd = true) {
+    pathToCompile.clear();
+    
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
