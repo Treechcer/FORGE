@@ -29,12 +29,12 @@ it, it'll not work.
 
 Here are my tests and on what kind of hardware they were running on. Because I'm working on multi platform script, all major platform that won't work will be fixed, at least I'll try to.
 
-| platform | version     | hardware                                                             | avg. time (s)    | total time (s) | status | note                                                     |
-|----------|-------------|----------------------------------------------------------------------|------------------|----------------|--------|----------------------------------------------------------|
-| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.06 - outdated  | 101.49         | ✅      | Runs normally / as expected and everything seems to work |
-| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.98            | 624.41         | ✅      | Runs normally / as expected and everything seems to work |
-| Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 46.83 - outdated | 1170.66        | ✅      | Runs normally / as expected and everything seems to work |
-| mac OS   | ---         | ---                                                                  |                  |                | ❔      | Not yet tested                                           |
+| platform | version     | hardware                                                             | avg. time (s)   | total time (s) | status | note                                                     |
+|----------|-------------|----------------------------------------------------------------------|-----------------|----------------|--------|----------------------------------------------------------|
+| Windows  | 11          | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 4.06 - outdated | 101.49         | ✅      | Runs normally / as expected and everything seems to work |
+| Linux    | debian (13) | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.98           | 624.41         | ✅      | Runs normally / as expected and everything seems to work |
+| Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 70.11           | 1752.69        | ✅      | Runs normally / as expected and everything seems to work |
+| mac OS   | ---         | ---                                                                  |                 |                | ❔      | Not yet tested                                           |
 
 > NOTE: the test for determining if it works is compiling this script and then running it. Also the average time is taken from mode `.\forge -thread ${CPU cores} -timeTest 25` and then added as avg. time (s) and as total time (or just compiling this script 25 times).
 
