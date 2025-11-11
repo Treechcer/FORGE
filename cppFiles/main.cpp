@@ -76,13 +76,13 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             exit(0);
         }
 
-        std::cout << cmd << " ??????" << std::endl ;
+        //std::cout << cmd << " ??????" << std::endl ;
     }
 }
 
 void compileWithThread() {
     int filePerThread = std::ceil((double)pathToCompile.size() / THREADNUMBER);
-    std::cout << filePerThread;
+    //std::cout << filePerThread;
     std::vector<std::filesystem::path> tempFiles;
     for (int i = 0; i < pathToCompile.size(); i++) {
         tempFiles.push_back(pathToCompile[i]);
@@ -386,7 +386,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
             std::string nameBefore = parser::variableValueCreator("exeName");
             parser::variableRewrite("exeName", "timeTest");
-            std::cout << "TimeTest Start now" << std::endl;
+            std::cout << "TimeTest Start now, max threads" << THREADNUMBER << std::endl;
 
             std::vector<int> timesMS;
         
