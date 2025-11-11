@@ -382,12 +382,14 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 return 1;
             }
 
+            std::filesystem::remove_all(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
+
             std::string nameBefore = parser::variableValueCreator("exeName");
             parser::variableRewrite("exeName", "timeTest");
             std::cout << "TimeTest Start now" << std::endl;
 
             std::vector<int> timesMS;
-
+        
             for (int j = 0; j < std::stoi(argv[i + 1]); j++) {
                 auto now = std::chrono::system_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
@@ -413,6 +415,11 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 std::cout << std::ceil(((double)done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
 
                 timesMS.push_back(msEnd - ms);
+                if (j < std::stoi(argv[i + 1]) - 1){
+                    std::filesystem::remove_all(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
+                    std::filesystem::create_directory(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
+                }
+                threads.clear();
             }
 
             int sum = 0;
