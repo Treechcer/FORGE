@@ -36,6 +36,7 @@ Here are my tests and on what kind of hardware they were running on. Because I'm
 | Windows  | 10          | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 70.11           | 1752.69        | ✅      | Runs normally / as expected and everything seems to work |
 | mac OS   | ---         | ---                                                                  |                 |                | ❔      | Not yet tested                                           |
 |raspbian | 12 (bookworm) |Raspberry pi 5 (8GB)  | 5.27 |131.7 | ✅|Runs normally / as expected and everything seems to work |
+|debian | 12 (bookworm) | raspberry pi zero 2W| 49.45 | 1236.15 | ✅ | Runs normally / as expected and everything seems to work  |
 
 > NOTE: the test for determining if it works is compiling this script and then running it. Also the average time is taken from mode `.\forge -thread ${CPU cores} -timeTest 25` and then added as avg. time (s) and as total time (or just compiling this script 25 times).
 
