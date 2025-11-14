@@ -34,7 +34,7 @@ Here are my tests and on what kind of hardware they were running on. Because I'm
 | Windows  | 11            | RTX 3060 ti (8GB), Intel i5-12600KF, 32GB RAM 3600 M/T, NVMe M.2 SSD | 3.35          | 83.7           | ✅      | Runs normally / as expected and everything seems to work |
 | Linux    | debian (13)   | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 24.98         | 624.41         | ✅      | Runs normally / as expected and everything seems to work |
 | Windows  | 10            | Intel Atom D2550, 2GB RAM, Intel GMA 3650, HDD (lenovo q180)         | 70.11         | 1752.69        | ✅      | Runs normally / as expected and everything seems to work |
-| mac OS   | ---           | ---                                                                  |               |                | ❔      | Not yet tested                                           |
+| mac OS   |Monterey| Mac mini late 2014          | 4GB RAM, i5 1.4 GHz intel dual core CPU, intel graphics 5000     |                 | ❔      | Not yet tested                                           |
 | raspbian | 12 (bookworm) | Raspberry pi 5 (8GB)                                                 | 5.27          | 131.7          | ✅      | Runs normally / as expected and everything seems to work |
 | debian   | 12 (bookworm) | raspberry pi zero 2W                                                 | 49.45         | 1236.15        | ✅      | Runs normally / as expected and everything seems to work |
 
