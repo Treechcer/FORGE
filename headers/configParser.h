@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../headers/funcs.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>

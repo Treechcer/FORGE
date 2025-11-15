@@ -1,5 +1,7 @@
 #include "../headers/configParser.h"
 #include "../headers/inputFuncs.h"
+#include "../headers/funcs.h"
+#include "../headers/constants.h"
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -26,9 +28,6 @@ void creatingProject(bool writeOutEnd);
 std::vector<std::thread> threads;
 std::vector<std::filesystem::path> pathToCompile;
 
-std::filesystem::path FORGEPATH = ".FORGE";
-std::filesystem::path FORGEPROJECTPATH = FORGEPATH / ".PROJECT";
-std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
 bool HASH = false;
 std::filesystem::path OUTPUTPATH = "";
 int THREADNUMBER = 4;
@@ -39,23 +38,6 @@ size_t hashString(std::string toHash) {
     size_t hashValue = hasher(text);
     //std::cout << hashValue << std::endl;
     return hashValue;
-}
-
-std::filesystem::path getExecFolder() {
-#if defined(_WIN32)
-    char path[MAX_PATH];
-    HMODULE hModule = GetModuleHandle(nullptr);
-    if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
-        return std::filesystem::path(path);
-    }
-#elif defined(__linux__)
-    char path[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
-    if (count != -1) {
-        return std::filesystem::path(std::string(path, count));
-    }
-#endif
-    return {};
 }
 
 void compileN(std::vector<std::filesystem::path> pathAfter) {
@@ -498,12 +480,6 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::path execFolder = getExecFolder();
 
-    int inputStatus = checkInputs(argc, argv, currentDir);
-
-    if (inputStatus == 1) {
-        return 0;
-    }
-
     if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
         std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
         ofs << parser::defaultConfig();
@@ -512,6 +488,12 @@ int main(int argc, char *argv[]) {
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
         std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
         create();
+    }
+
+    int inputStatus = checkInputs(argc, argv, currentDir);
+
+    if (inputStatus == 1) {
+        return 0;
     }
 
     std::filesystem::create_directory(FORGEPATH);

@@ -1,4 +1,6 @@
 #include "../headers/configParser.h"
+#include "../headers/constants.h"
+#include "../headers/funcs.h"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -11,6 +13,18 @@ void config(std::string config);
 parser::parser(std::filesystem::path fileName) {
     if (fileName.extension() != ".forgecfg") {
         std::exit(1);
+    }
+
+    std::filesystem::path execFolder = getExecFolder();
+
+    if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
+        std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
+        ofs << parser::defaultConfig();
+    }
+
+    if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
+        std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        create();
     }
 
     this->fileName = fileName;
@@ -75,8 +89,29 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
     std::string tempVal = "";
     while (config.size() > 0) {
         //std::cout << tempVal << std::endl;
-        if (config[0] != ' ' && config[0] != '\n') {
+        if (config[0] != ' ' && config[0] != '\n' && config[0] != '\'') {
             tempVal += config[0];
+        }
+        else if (config[0] == '\'') {
+            config.erase(0, 1);
+            while (config[0] != '\'') {
+                tempVal += config[0];
+                config.erase(0, 1);
+            }
+            if (config[0] == ' '){
+                config.erase(0, 1);
+            }
+            std::string flag = "";
+            while (config[0] != '\n' && config[0] != ' ') {
+                if (config[0] != ' ') {
+                    flag = config[0];
+                }
+                config.erase(0, 1);
+            }
+            if (flag == "-KEEP"){
+                tempVal += '\'';
+                tempVal.insert(0, "'");
+            }
         }
         else {
             int index = 0;
