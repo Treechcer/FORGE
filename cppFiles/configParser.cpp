@@ -49,7 +49,7 @@ parser::parser(std::filesystem::path fileName) {
 
 std::string parser::defaultConfig() {
     return R"(hash false
-exeName app.exe
+exeName "forge app.exe" -KEEP
 compileCommand g++)";
 }
 
@@ -102,7 +102,7 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
         //key = std::regex_replace(key, std::regex("\\.value"), "");
 
-        std::cout << key + " : ";
+        //std::cout << key + " : ";
         indexer++;
 
         std::string value = "";
@@ -142,8 +142,8 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
                 value.erase(value.size() - 1, 1);
             }
         }
-        std::cout << value << std::endl;
-        std::cout << flag << std::endl;
+        //std::cout << value << std::endl;
+        //std::cout << flag << std::endl;
 
         p.createFiles(key, value);
     }

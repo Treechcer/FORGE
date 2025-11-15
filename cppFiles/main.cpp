@@ -1,7 +1,7 @@
 #include "../headers/configParser.h"
-#include "../headers/inputFuncs.h"
-#include "../headers/funcs.h"
 #include "../headers/constants.h"
+#include "../headers/funcs.h"
+#include "../headers/inputFuncs.h"
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -12,7 +12,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -58,7 +57,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             exit(0);
         }
 
-        std::cout << cmd << " ??????" << std::endl ;
+        std::cout << cmd << " ??????" << std::endl;
     }
 }
 
@@ -149,7 +148,7 @@ void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<
             if (!(std::filesystem::exists(pathAfter[i]))) {
                 copy = true;
             }
-            else if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])) {
+            else if (std::filesystem::last_write_time(pathBefore[i]) > std::filesystem::last_write_time(pathAfter[i])) {
                 copy = true;
             }
         }
@@ -197,7 +196,7 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
             if (!(std::filesystem::exists(pathAfter[i]))) {
                 copy = true;
             }
-            else if (std::filesystem::last_write_time(pathAfter[i]) != std::filesystem::last_write_time(pathBefore[i])) {
+            else if (std::filesystem::last_write_time(pathBefore[i]) > std::filesystem::last_write_time(pathAfter[i])) {
                 copy = true;
             }
         }
@@ -373,7 +372,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             std::cout << "TimeTest Start now, max threads " << THREADNUMBER << std::endl;
 
             std::vector<int> timesMS;
-        
+
             for (int j = 0; j < std::stoi(argv[i + 1]); j++) {
                 auto now = std::chrono::system_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
@@ -399,7 +398,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 std::cout << std::ceil(((double)done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
 
                 timesMS.push_back(msEnd - ms);
-                if (j < std::stoi(argv[i + 1]) - 1){
+                if (j < std::stoi(argv[i + 1]) - 1) {
                     std::filesystem::remove_all(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
                     std::filesystem::create_directory(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
                 }
@@ -441,7 +440,7 @@ void createDirs() {
 
 void creatingProject(bool writeOutEnd = true) {
     pathToCompile.clear();
-    
+
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
@@ -454,6 +453,10 @@ void creatingProject(bool writeOutEnd = true) {
     if (status == 1) {
         return;
     }
+
+    //for (int i = 0; i < pathToCompile.size(); i++) {
+    //    std::cout << pathToCompile[i] << std::endl;
+    //}
 
     //compileAll(changedPaths);
 
