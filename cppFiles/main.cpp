@@ -494,8 +494,6 @@ int main(int argc, char *argv[]) {
         create();
     }
 
-    COMPILERCOMMAND = cfgVals("compileCommand");
-
     int inputStatus = checkInputs(argc, argv, currentDir);
 
     if (inputStatus == 1) {
@@ -511,6 +509,8 @@ int main(int argc, char *argv[]) {
     create();
 
     HASH = strToBool(cfgVals("hash"));
+
+    COMPILERCOMMAND = cfgVals("compileCommand");
 
     creatingProject();
 
