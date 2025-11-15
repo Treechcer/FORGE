@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -47,9 +48,9 @@ parser::parser(std::filesystem::path fileName) {
 }
 
 std::string parser::defaultConfig() {
-    return R"(hash.value false
-exeName.value app.exe
-compileCommand.value g++)";
+    return R"(hash false
+exeName app.exe
+compileCommand g++)";
 }
 
 void parser::createFiles(std::filesystem::path file, std::string value) {
@@ -62,7 +63,7 @@ void parser::createFiles(std::filesystem::path file, std::string value) {
 }
 
 std::string parser::variableValueCreator(std::string valueName) {
-    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
+    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName);
     std::ifstream ifs(path);
     std::stringstream buffer;
     buffer << ifs.rdbuf();
@@ -74,7 +75,7 @@ std::string parser::variableValueCreator(std::string valueName) {
 }
 
 void parser::variableRewrite(std::string valueName, std::string value) {
-    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName + ".value");
+    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName);
     std::ofstream ofs(path);
     ofs << value;
     ofs.close();
@@ -84,61 +85,121 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
 /*std::vector<parser>*/ void config(std::string config) {
     //std::vector<parser> cfg;
-    bool wasSpace = false;
-    std::string values[2];
-    std::string tempVal = "";
-    while (config.size() > 0) {
-        //std::cout << tempVal << std::endl;
-        if (config[0] != ' ' && config[0] != '\n' && config[0] != '\'') {
-            tempVal += config[0];
-        }
-        else if (config[0] == '\'') {
-            config.erase(0, 1);
-            while (config[0] != '\'') {
-                tempVal += config[0];
-                config.erase(0, 1);
-            }
-            if (config[0] == ' '){
-                config.erase(0, 1);
-            }
-            std::string flag = "";
-            while (config[0] != '\n' && config[0] != ' ') {
-                if (config[0] != ' ') {
-                    flag = config[0];
-                }
-                config.erase(0, 1);
-            }
-            if (flag == "-KEEP"){
-                tempVal += '\'';
-                tempVal.insert(0, "'");
-            }
-        }
-        else {
-            int index = 0;
-            if (wasSpace)
-                index = 1;
-            values[index] = tempVal;
-            tempVal.clear();
+    //bool wasSpace = false;
+    //std::string values[2];
+    //std::string tempVal = "";
 
-            wasSpace = !wasSpace;
-
-            if (index == 1) {
-                p.createFiles(values[0], values[1]);
-            }
+    std::stringstream ss(config);
+    std::string line;
+    while (std::getline(ss, line)) {
+        //getting the 'key'
+        int indexer = 0;
+        std::string key = "";
+        while (line[indexer] != ' ') {
+            key += line[indexer];
+            indexer++;
         }
 
-        config.erase(0, 1);
+        //key = std::regex_replace(key, std::regex("\\.value"), "");
+
+        std::cout << key + " : ";
+        indexer++;
+
+        std::string value = "";
+
+        bool quote = line[indexer] == '"';
+        char quoteType = ' ';
+        if (quote){
+            quoteType = line[indexer];
+            indexer++;
+            value += quoteType;
+        }
+
+        while (indexer < line.size() && ((quote && line[indexer] != '"') || (!quote && line[indexer] != ' '))) {
+            value += line[indexer];
+            indexer++;
+        }
+
+        if (quote) {
+            value += quoteType;
+            indexer++;
+        }
+
+        std::string flag = "";
+        indexer++;
+        if (indexer < line.size()){
+            while (indexer < line.size() && line[indexer] != ' ') {
+                flag += line[indexer];
+                indexer++;
+            }
+        }
+
+        if (!(flag == "-keep" || flag == "-KEEP")){
+            if (value[0] == '"' || value[0] == '\'') {
+                value.erase(0,1);
+            }
+            if (value[value.size() - 1] == '"' || value[value.size() - 1] == '\'') {
+                value.erase(value.size() - 1, 1);
+            }
+        }
+        std::cout << value << std::endl;
+        std::cout << flag << std::endl;
+
+        p.createFiles(key, value);
     }
 
-    if (!tempVal.empty()) {
-        int index = 0;
-        if (wasSpace)
-            index = 1;
-        values[index] = tempVal;
-        if (index == 1) {
-            p.createFiles(values[0], values[1]);
-        }
-    }
+    //while (config.size() > 0) {
+    //    //std::cout << tempVal << std::endl;
+    //    if (config[0] != ' ' && config[0] != '\n' && config[0] != '\'') {
+    //        tempVal += config[0];
+    //    }
+    //    else if (config[0] == '\'') {
+    //        config.erase(0, 1);
+    //        while (config[0] != '\'') {
+    //            tempVal += config[0];
+    //            config.erase(0, 1);
+    //        }
+    //        if (config[0] == ' '){
+    //            config.erase(0, 1);
+    //        }
+    //        std::string flag = "";
+    //        while (config[0] != '\n' && config[0] != ' ') {
+    //            if (config[0] != ' ') {
+    //                flag = config[0];
+    //            }
+    //            config.erase(0, 1);
+    //        }
+    //        if (flag == "-KEEP"){
+    //            tempVal += '\'';
+    //            tempVal.insert(0, "'");
+    //        }
+    //    }
+    //    else {
+    //        int index = 0;
+    //        if (wasSpace)
+    //            index = 1;
+    //        values[index] = tempVal;
+    //        tempVal.clear();
+    //
+    //        wasSpace = !wasSpace;
+    //
+    //        if (index == 1) {
+    //            p.createFiles(values[0], values[1]);
+    //        }
+    //    }
+    //
+    //    config.erase(0, 1);
+    //}
+    //
+    //if (!tempVal.empty()) {
+    //    int index = 0;
+    //    if (wasSpace)
+    //        index = 1;
+    //    values[index] = tempVal;
+    //    if (index == 1) {
+    //        p.createFiles(values[0], values[1]);
+    //    }
+    //}
 }
 
 void create() {

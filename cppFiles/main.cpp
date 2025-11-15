@@ -298,7 +298,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 #if defined(__linux__)
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
 #elif defined(_WIN32)
-    if (!std::regex_match(appName, std::regex("\\.exe$"))) {
+    if (!std::regex_search(appName, std::regex("\\.exe$")) && !std::regex_search(appName, std::regex("\\.exe\"$")) && !std::regex_search(appName, std::regex("\\.exe'$"))) {
         appName.append(".exe");
     }
 #endif
