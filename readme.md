@@ -109,7 +109,7 @@ You have to use forge in your root of you C++ project, because the .exe will be 
 ### Release
 
 I would recommend downloading the newest release of this script. There is now
-testing release, you can look for it [here](https://github.com/Treechcer/FORGE/releases/tag/test-version) where is tutorial how to download it too.
+[testing release](https://github.com/Treechcer/FORGE/releases/tag/test-version), you can look for it where is tutorial how to download it too.
 
 ### Compile yourself
 

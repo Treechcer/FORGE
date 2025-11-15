@@ -47,7 +47,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             continue;
         }
 
-        std::string cmd = COMPILERCOMMAND + "-c ";
+        std::string cmd = COMPILERCOMMAND + " -c ";
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
@@ -58,7 +58,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             exit(0);
         }
 
-        std::cout << cmd << " ??????" << std::endl;
+        std::cout << "Executin command:" << cmd << std::endl;
     }
 }
 
@@ -434,9 +434,9 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 }
 
 void createDirs() {
-    std::filesystem::create_directory(FORGEPATH);
-    std::filesystem::create_directory(FORGEPROJECTPATH);
-    std::filesystem::create_directory(FORGEDATAPATH);
+    std::filesystem::create_directories(FORGEPATH);
+    std::filesystem::create_directories(FORGEPROJECTPATH);
+    std::filesystem::create_directories(FORGEDATAPATH);
 }
 
 void creatingProject(bool writeOutEnd = true) {
@@ -469,7 +469,7 @@ void creatingProject(bool writeOutEnd = true) {
     //    std::cout << changedPaths[i].extension();
     //}
     if (writeOutEnd) {
-        std::cout << "FINISHED " << cfgVals("exeName") << std::endl;
+        std::cout << "You code was compiled into: " << cfgVals("exeName") << std::endl;
     }
 }
 
@@ -477,6 +477,8 @@ int main(int argc, char *argv[]) {
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     //std::cout << "start: " << ms << std::endl;
+
+    //std::cout << std::filesystem::current_path() << std::endl;
 
     createDirs();
 

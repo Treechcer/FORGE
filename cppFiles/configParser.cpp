@@ -27,6 +27,7 @@ parser::parser(std::filesystem::path fileName) {
     }
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
+        std::filesystem::create_directories(FORGEDATAPATH);
         std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
         create();
     }
