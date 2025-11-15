@@ -46,7 +46,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
             continue;
         }
 
-        std::string cmd = "g++ -c ";
+        std::string cmd = COMPILERCOMMAND + "-c ";
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
@@ -224,7 +224,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
             continue;
         }
 
-        std::string cmd = "g++ -c ";
+        std::string cmd = COMPILERCOMMAND + " -c ";
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
@@ -242,7 +242,7 @@ void compileOne(std::filesystem::path pathAfter) {
         return;
     }
 
-    std::string cmd = "g++ -c ";
+    std::string cmd = COMPILERCOMMAND + " -c ";
     cmd.append(pathAfter.string());
     cmd.append(" -o ");
     cmd.append(pathAfter.replace_extension(".o").string());
@@ -302,7 +302,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     }
 #endif
 
-    std::string cmd = "g++ " + allObJs + "-o ";
+    std::string cmd = COMPILERCOMMAND + " " + allObJs + "-o ";
     cmd.append((OUTPUTPATH / appName).string());
     //std::cout << cmd;
     int res = system(cmd.c_str());
@@ -321,7 +321,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         if (cmd == "-update") {
             if (argv[i + 1] == "unstable") {
                 std::filesystem::current_path(execFolder);
-                update("g++", argv[0]);
+                update(COMPILERCOMMAND, argv[0]);
                 std::filesystem::current_path(currentDir);
                 i++;
             }
@@ -492,6 +492,8 @@ int main(int argc, char *argv[]) {
         std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
         create();
     }
+
+    COMPILERCOMMAND = cfgVals("compileCommand");
 
     int inputStatus = checkInputs(argc, argv, currentDir);
 
