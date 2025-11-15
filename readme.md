@@ -18,16 +18,16 @@
   - [Installation](#installation)
     - [Release](#release)
     - [Compile yourself](#compile-yourself)
+    - [Compiling command](#compiling-command)
   - [Future](#future)
 
 ## intro
 
-Forge is multi platform script (Windows and Linux) that compiles C++ code, into `.exe` files effectively. Forge uses g++ to compile to .exe, you have to have g++ to use this, without
-it, it'll not work.
+Forge is multi platform script (Windows, Linux and Mac OS) that compiles C++ code, into `.exe` files effectively. Forge uses g++ / clang++ to compile to .exe, you have to have g++ / clang++ to use this, without it, it'll not work.
 
 ## Tested platforms
 
-Here are my tests and on what kind of hardware they were running on. Because I'm working on multi platform script, all major platform that won't work will be fixed, at least I'll try to.
+Here are my tests and on what kind of hardware they were running on. Because I'm working on multi platform script, all major platform that won't work will be fixed, at least I'll try to. All major platform I've tested works, if something doesn't work open a issue here on github.
 
 | platform | version       | hardware                                                                          | avg. time (s) | total time (s) | status | note                                                                                                                                                                                                                         |
 |----------|---------------|-----------------------------------------------------------------------------------|---------------|----------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -42,17 +42,18 @@ Here are my tests and on what kind of hardware they were running on. Because I'm
 
 ## How it works?
 
-Forge checks all `.cpp` and `.h` files, then it checks them if they
+Forge checks all `.cpp` and `.h` files in directory, then it checks them if they
 should be switched and compiled into object files (`.o`), this has two
 modes, Hash and Time. It moves the files into `.FORGE` folder and it's
-subdirectories (`.DATA`, `.PROJECT`) if the check in mode is `false`.
+subdirectories (`.DATA`, `.PROJECT`).
 
 ## Folders
 
 Forge uses 3 folders, the fist one is main folder called `.FORGE` where are only
-store the subdirectories, called `.DATA` and `.PROJECT`.
+store the subdirectories, called `.DATA` and `.PROJECT`. There can also be `.UPDATE`
+which is created right after using `.\forge -update` (that doesn't work for now*).
 
-> **NOTE**: .FORGE is hidden folder on windows.
+> **NOTE**: .FORGE is hidden folder on windows and UNIX systems.
 
 `.DATA` is to store your
 config, if you want to change anything in it just go there. `.PROJECT` stores all
@@ -66,16 +67,20 @@ didn't do it.
 ### Hash Mode
 
 This mode checks Hash of the file in `./.FORGE/.PROJECT` and in
-`.`, if hash of the file in `.` (main directory) differs from the one in project directory, it compiles it to .o file.
+`.`, if hash of the file in `.` (main directory) differs from the one in project directory, it moves the file and compile it to .o file.
+
+> NOTE: Not recommended, it takes longer, especially for big files and projects.
 
 ### Time Mode
 
 This mode checks Time of edit of the file in `./.FORGE/.PROJECT` and in
-`.`, if time of the file in `.` (main directory) differs from the one in project directory, it compiles it to .o file.
+`.`, if time of the file in `.` (main directory) is newer from the one in project directory, it moves the file and compile it to .o file.
 
 ## Build project
 
-After all files has been compiled into `.o` it starts the build process and converts it into `.exe` file, which then is outputted to path where you are executing it into.
+After all files has been compiled into `.o` it starts the build process and converts it into `.exe` file, which then is outputted to path where you are executing it into. It takes the name from your config `exeName`.
+
+> NOTE: FORGE automatically adds .exe and removes it based on the OS you're on. UNIX systems doesn't have .exe and Windows has .exe, always.
 
 ### windows specific
 
@@ -83,26 +88,35 @@ It adds `.ico` file to your .exe from what's in the file you have forge saved in
 
 ## config
 
-Forge has config in file `forge.forgecfg` which is "key value" type of config, where spaces and new line characters split the key and values and saves them. Default config should look like this:
+Forge has config in file `forge.forgecfg` which is "key value" type of config (the newest parser also supports `flags` the only one is -keep which is used if you use string with spaces by using either ' or " and then your whole string and -keep makes you it retain the quotation marks), where spaces split the key and values (+ flags) and saves them. Default config should look something like this:
 
 ```plaintext
-hash.value false
-exeName.value app.exe
+hash false
+exeName "forge app.exe" -KEEP
+compileCommand g++
 ```
 
-This type of config works by having space or new line between keys and values.
+For Mac Users:
+
+```plaintext
+hash false
+exeName "forge app.exe" -KEEP
+compileCommand "clang++ -std=c++17"
+```
+
+> NOTE: you can change the STD you're using, but 17 is the least to compile FORGE, which is why it's the default.
 
 ### config values
 
-- `hash.value` : This switches between Hash and Time mode to compare the values of files.
-- `exeName.value` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
-- `compileCommand.value` : This choses your your command for compiling.
+- `hash` : This switches between Hash and Time mode to compare the values of files.
+- `exeName` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
+- `compileCommand` : This choses your your command for compiling (and for Mac OS because they use clang++).
 
 > Note: if you change it from g++ to something else, you should have in mind that the compilation might not work if you use other compiler. That command looks like this (default): `g++ -c file1.cpp file1.cpp -o app.exe` this is mostly used if you remap your g++ command to something else.
 
 ## Usage
 
-You have to use forge in your root of you C++ project, because the .exe will be outputted there, otherwise it might not work.
+You have to use forge in your root of you C++ project (at the start of the whole project, "root" should be the same folder as github repo starts in most cases or where it would start), because the .exe will be outputted there, otherwise it might not work.
 
 ## Installation
 
@@ -118,10 +132,32 @@ The you can compile this yourself and create folder with your compiled `.exe`, a
 Environmental Variables into Path (Windows), for linux I have no idea how to do
 it for now (+ no idea how well it works - this will be tested later).
 
+### Compiling command
+
+If you want to compile FORGE, the easiest way to compile it:
+
+`WINDOWS`:
+
+```pwsh
+g++ cppFiles/*.cpp -o forge.exe
+```
+
+`Linux`:
+
+```pwsh
+g++ cppFiles/*.cpp -o forge
+```
+
+`Mac OS`:
+
+```pwsh
+clang++ -std=c++17 cppFiles/*.cpp -o forge
+```
+
 ## Future
 
-I want to add params as input to this small CLI app, for example I want to add update
-(two types, one that compiles the newest code on main branch and other that downloads
-the newest release - I don't know if this is possible or how), add more configurable
-things into config, better config parser (more sophisticated but for now it's all it
-needs, maybe I'll make it for JSON or something)... And more!
+In future I want to add / fix the update function, make the inputs better
+because now the order matters which is bad and incorrect. I want to
+also fix the update function because now it doesn't work. Make
+the parser better and have more values to configure and maybe more
+flags if needed.
