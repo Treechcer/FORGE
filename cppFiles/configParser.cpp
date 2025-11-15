@@ -52,13 +52,27 @@ parser::parser(std::filesystem::path fileName) {
 }
 
 std::string parser::defaultConfig() {
+#ifdef __APPLE__
+    return R"(hash false
+exeName "forge app.exe" -KEEP
+compileCommand "clang++ -std=c++17")";
+#else
     return R"(hash false
 exeName "forge app.exe" -KEEP
 compileCommand g++)";
+#endif
 }
 
 void parser::createFiles(std::filesystem::path file, std::string value) {
-    std::filesystem::path wholePath = (std::filesystem::path) "." / ".FORGE" / ".DATA" / file;
+#ifdef __linux__ || __APPLE__
+    //this should work... I think lol
+    if (file == "exeName"){
+        value = std::regex_replace(value, std::regex("\\.exe$"), "");
+        value = std::regex_replace(value, std::regex("\\.exe'$"), "");
+        value = std::regex_replace(value, std::regex("\\.exe\"$"), "");
+    }
+#endif
+    std::filesystem::path wholePath = FORGEDATAPATH / file;
     std::filesystem::create_directories(wholePath.parent_path());
 
     std::ofstream ofs(wholePath);
@@ -67,7 +81,7 @@ void parser::createFiles(std::filesystem::path file, std::string value) {
 }
 
 std::string parser::variableValueCreator(std::string valueName) {
-    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName);
+    std::filesystem::path path = FORGEDATAPATH / (valueName);
     std::ifstream ifs(path);
     std::stringstream buffer;
     buffer << ifs.rdbuf();
@@ -79,13 +93,13 @@ std::string parser::variableValueCreator(std::string valueName) {
 }
 
 void parser::variableRewrite(std::string valueName, std::string value) {
-    std::filesystem::path path = std::filesystem::path(".FORGE") / ".DATA" / (valueName);
+    std::filesystem::path path = FORGEDATAPATH / (valueName);
     std::ofstream ofs(path);
     ofs << value;
     ofs.close();
 }
 
-parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
+parser p(FORGEDATAPATH / "forge.forgecfg");
 
 /*std::vector<parser>*/ void config(std::string config) {
     //std::vector<parser> cfg;

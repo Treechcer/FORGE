@@ -273,7 +273,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 #ifdef _WIN32
     std::filesystem::path execFolder = getExecFolder();
     std::filesystem::path rcFile = execFolder.parent_path() / "windowsResources" / "resources.rc";
-    std::filesystem::path objFile = (std::filesystem::path) ".FORGE" / ".PROJECT" / "resources.o";
+    std::filesystem::path objFile = (std::filesystem::path) FORGEPROJECTPATH / "resources.o";
 
     if (std::filesystem::exists(rcFile)) {
         //std::cout << execFolder << "\n" << rcFile << "\n" << objFile << "\n";
@@ -295,9 +295,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     if (!appName.empty() && appName.back() == '\r') {
         appName.pop_back();
     }
-#if defined(__linux__)
+#ifdef __linux__ || __APPLE__
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
-#elif defined(_WIN32)
+    appName = std::regex_replace(appName, std::regex("\\.exe'$"), "");
+    appName = std::regex_replace(appName, std::regex("\\.exe\"$"), "");
+#elif _WIN32
     if (!std::regex_search(appName, std::regex("\\.exe$")) && !std::regex_search(appName, std::regex("\\.exe\"$")) && !std::regex_search(appName, std::regex("\\.exe'$"))) {
         appName.append(".exe");
     }
@@ -366,7 +368,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 return 1;
             }
 
-            std::filesystem::remove_all(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
+            std::filesystem::remove_all(FORGEPROJECTPATH);
 
             std::string nameBefore = parser::variableValueCreator("exeName");
             parser::variableRewrite("exeName", "timeTest");
@@ -400,8 +402,8 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
                 timesMS.push_back(msEnd - ms);
                 if (j < std::stoi(argv[i + 1]) - 1) {
-                    std::filesystem::remove_all(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
-                    std::filesystem::create_directory(std::filesystem::path(".") / std::filesystem::path(".FORGE") / std::filesystem::path(".PROJECT"));
+                    std::filesystem::remove_all(FORGEPROJECTPATH);
+                    std::filesystem::create_directory(FORGEPROJECTPATH);
                 }
                 threads.clear();
             }
