@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -109,7 +110,7 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
         bool quote = line[indexer] == '"';
         char quoteType = ' ';
-        if (quote){
+        if (quote) {
             quoteType = line[indexer];
             indexer++;
             value += quoteType;
@@ -127,16 +128,16 @@ parser p((std::filesystem::path) ".FORGE" / ".DATA" / "forge.forgecfg");
 
         std::string flag = "";
         indexer++;
-        if (indexer < line.size()){
+        if (indexer < line.size()) {
             while (indexer < line.size() && line[indexer] != ' ') {
                 flag += line[indexer];
                 indexer++;
             }
         }
 
-        if (!(flag == "-keep" || flag == "-KEEP")){
+        if (!(flag == "-keep" || flag == "-KEEP")) {
             if (value[0] == '"' || value[0] == '\'') {
-                value.erase(0,1);
+                value.erase(0, 1);
             }
             if (value[value.size() - 1] == '"' || value[value.size() - 1] == '\'') {
                 value.erase(value.size() - 1, 1);
