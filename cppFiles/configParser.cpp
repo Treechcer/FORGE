@@ -64,7 +64,7 @@ compileCommand g++)";
 }
 
 void parser::createFiles(std::filesystem::path file, std::string value) {
-#ifdef __linux__ || __APPLE__
+#if defined(__linux__) || defined(__APPLE__)
     //this should work... I think lol
     if (file == "exeName"){
         value = std::regex_replace(value, std::regex("\\.exe$"), "");

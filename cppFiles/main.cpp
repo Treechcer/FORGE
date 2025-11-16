@@ -295,7 +295,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     if (!appName.empty() && appName.back() == '\r') {
         appName.pop_back();
     }
-#ifdef __linux__ || __APPLE__
+#if defined(__linux__) || defined(__APPLE__)
     appName = std::regex_replace(appName, std::regex("\\.exe$"), "");
     appName = std::regex_replace(appName, std::regex("\\.exe'$"), "");
     appName = std::regex_replace(appName, std::regex("\\.exe\"$"), "");
