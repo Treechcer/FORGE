@@ -24,7 +24,7 @@ std::filesystem::path getExecFolder() {
     uint32_t size = sizeof(path);
 
     if (_NSGetExecutablePath(path, &size) == 0) {
-        return std::filesystem::canonical(path);
+        return std::filesystem::canonical(path).parent_path();
     }
 #endif
     return {};
