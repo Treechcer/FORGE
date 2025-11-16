@@ -322,35 +322,10 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         //std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
         if (cmd == "-update") {
-            if (argv[i + 1] == "unstable") {
-                std::filesystem::current_path(execFolder);
-                update(COMPILERCOMMAND, argv[0]);
-                std::filesystem::current_path(currentDir);
-                i++;
-            }
-            else if (argv[i + 1] == "stable") {
-                bool found = false;
-                std::string ver;
-                for (int u = 0; u < argc; u++) {
-                    if (argv[u] == "-version") {
-                        found = true;
-                        ver = argv[u + 1];
-                        break;
-                    }
-                }
-
-                //TODO add download for stable version but today I'm lazyyy
-
-                //git clone => error if it exists, I don't feel like doing this, not worth it, unstable is fine ig
-
-                //if (found){
-                //    std::string cmd;
-                //    cmd = "git clone branch " + ver + " --depth 1 https://github.com/Treechcer/FORGE /.FORGE/.UPDATE";
-                //}
-            }
-            else if (std::regex_match(argv[i + 1], std::regex("^-"))) {
-                i++;
-            }
+            //std::filesystem::current_path(execFolder);
+            update(COMPILERCOMMAND, argv[0]);
+            //std::filesystem::current_path(currentDir);
+            i++;
         }
         else if (cmd == "-path") {
             OUTPUTPATH = argv[i + 1];

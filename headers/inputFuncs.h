@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../headers/constants.h"
+
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
