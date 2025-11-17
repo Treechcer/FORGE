@@ -410,6 +410,11 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 return 1;
             }
             THREADNUMBER = std::stoi(argv[i + 1]);
+            i++;
+        }
+        else if (cmd == "library"){
+            LIBRARIES = std::stoi(argv[i + 1]);
+            i++;
         }
     }
 
