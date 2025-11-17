@@ -476,6 +476,28 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::create_directories(CONFIGFOLDER);
 
+    if (!std::filesystem::exists(".gitignore")){
+        std::ofstream ofs(".gitignore");
+    }
+
+    if (std::filesystem::exists(".gitignore")){
+        bool exists = false;
+        std::ifstream ifs(".gitignore");
+        std::string line;
+        while (std::getline(ifs, line)) {
+            if (line == ".FORGE"){
+                exists = true;
+                break;
+            }
+        }
+        ifs.close();
+        if (!exists){
+            std::ofstream ofs(".gitignore");
+            ofs << ".FORGE" << std::endl;
+            ofs.close();
+        }
+    }
+
     if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
         std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
         ofs << parser::defaultConfig();
