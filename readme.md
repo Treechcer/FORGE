@@ -17,6 +17,8 @@
   - [Usage](#usage)
   - [Installation](#installation)
     - [Release](#release)
+      - [Windows](#windows)
+      - [MacOS / Linux](#macos--linux)
     - [Compile yourself](#compile-yourself)
     - [Compiling command](#compiling-command)
   - [Future](#future)
@@ -122,8 +124,29 @@ You have to use forge in your root of you C++ project (at the start of the whole
 
 ### Release
 
-I would recommend downloading the newest release of this script. There is now
-[testing release](https://github.com/Treechcer/FORGE/releases/tag/test-version), you can look for it where is tutorial how to download it too.
+The easiest way to use forge is by downloading the files from releases. All releases should be
+considered as stable version, but they're outdated.
+
+To download it and add into your PATH (so it's executable from terminal), you have to
+download the newest release of Forge, for your platform (Windows, Mac or Linux).
+After you have done this, you have to add it into PATH, which is different on
+different platforms. Here is how you can do it:
+
+#### Windows
+
+After you download the `.exe` you have to open `edit environmental variables`, you'll open
+it by just typing it into your search bar, then you have to click on `environmental variables`,
+click on `PATH` then `edit`, in the new window you have to click on `new` and then
+you have to add the path to your **folder** with the `forge.exe` file. After all this
+you can go into your CMD/PWSH and type `forge` and it should do something.
+
+#### MacOS / Linux
+
+Easiest way to make it executable from your terminal is just by adding it into your
+`/usr/local/bin`, after you add it there it's now possible to call it from terminal.
+
+> NOTE: this might make it not executable, if it's the case you have to use
+> command `chmod +x forge`, this should make it work.
 
 ### Compile yourself
 
@@ -142,11 +165,11 @@ If you want to compile FORGE, the easiest way to compile it:
 g++ cppFiles/*.cpp -o forge.exe
 ```
 
-Then you have to edit your environmental variables and add to PATH folder where the
-`.exe` is, the PATH should be just to the folder not to specific file. After this
-forge should be accessible by calling forge (it's called by it's name, so if you
-changed the name from `forge.exe` to something else, you will have to call it
-by the name you named it.
+After you download the `.exe` you have to open `edit environmental variables`, you'll open
+it by just typing it into your search bar, then you have to click on `environmental variables`,
+click on `PATH` then `edit`, in the new window you have to click on `new` and then
+you have to add the path to your **folder** with the `forge.exe` file. After all this
+you can go into your CMD/PWSH and type `forge` and it should do something.
 
 `Linux`:
 
