@@ -1,5 +1,7 @@
 #include <filesystem>
+#include <fstream>  
 #include <iostream>
+#include "../headers/constants.h"
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__linux__) || defined(__APPLE__)
@@ -44,8 +46,9 @@ std::filesystem::path getConfigPath() {
 }
 
 std::string getDefaultClangFile(){
-    return R"(BasedOnStyle: LLVM
+    std::string defaultClang = R"(BasedOnStyle: LLVM
 IndentWidth: 4
+
 BasedOnStyle: LLVM
 IndentWidth: 4
 UseTab: Never
@@ -66,6 +69,23 @@ BraceWrapping:
   AfterUnion: true
 
 ColumnLimit: 0 
-MaxEmptyLinesToKeep: 1
-    )";
+MaxEmptyLinesToKeep: 1)";
+
+
+    if (!std::filesystem::exists(std::filesystem::path(CONFIGFOLDER) / ".clang-format")){
+        std::ofstream outfile (std::filesystem::path(CONFIGFOLDER) / ".clang-format");
+        outfile << defaultClang << std::endl; outfile.close();
+    }
+    else if (!std::filesystem::exists(".clang-format")){
+        std::ofstream outfile (".clang-format");
+        outfile << defaultClang << std::endl; outfile.close();
+    }
+    else if (std::filesystem::exists(std::filesystem::path(CONFIGFOLDER) / ".clang-format")){
+        std::ifstream t(CONFIGFOLDER / ".clang-format");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        defaultClang = buffer.str();
+    }
+    
+    return defaultClang;
 }
