@@ -273,7 +273,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 #ifdef _WIN32
     std::filesystem::path execFolder = getExecFolder();
     std::filesystem::path rcFile = execFolder.parent_path() / "windowsResources" / "resources.rc";
-    std::filesystem::path objFile = (std::filesystem::path) FORGEPROJECTPATH / "resources.o";
+    std::filesystem::path objFile = (std::filesystem::path)FORGEPROJECTPATH / "resources.o";
 
     if (std::filesystem::exists(rcFile)) {
         //std::cout << execFolder << "\n" << rcFile << "\n" << objFile << "\n";
@@ -304,6 +304,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         appName.append(".exe");
     }
 #endif
+
+    if (std::regex_search(appName, std::regex("\\s")) && ((appName[0] != '"' && appName[0] != '\'') && (appName[appName.size() - 1] != '"' && appName[appName.size() - 1] != '\''))) {
+        std::string quote = "\"";
+        appName = quote + appName + quote;
+    }
 
     std::string cmd = COMPILERCOMMAND + " " + allObJs + "-o ";
     cmd.append((OUTPUTPATH / appName).string());
@@ -457,13 +462,13 @@ int main(int argc, char *argv[]) {
 
     //std::cout << std::filesystem::current_path() << std::endl;
 
+    CONFIGFOLDER = getConfigPath();
+
     createDirs();
 
     std::filesystem::path currentDir = std::filesystem::current_path();
 
     std::filesystem::path execFolder = getExecFolder();
-
-    CONFIGFOLDER = getConfigPath();
 
     //std::cout << CONFIGFOLDER;
 
@@ -472,11 +477,25 @@ int main(int argc, char *argv[]) {
     if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
         std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
         ofs << parser::defaultConfig();
+        std::cout << CONFIGFOLDER / "forge.forgecfg" << "2";
     }
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
         std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        std::cout << CONFIGFOLDER / "forge.forgecfg";
         create();
+    }
+
+    if (strToBool(cfgVals("createClangFile"))) {
+        if (!std::filesystem::exists(std::filesystem::path(".") / ".clang-format")) {
+            std::ofstream ofs(CONFIGFOLDER / ".clang-format");
+            ofs << getDefaultClangFile();
+        }
+
+        if (!std::filesystem::exists(std::filesystem::path(".") / ".clang-format")) {
+            std::filesystem::copy(CONFIGFOLDER / ".clang-format", std::filesystem::path(".") / ".clang-format", std::filesystem::copy_options::overwrite_existing);
+            create();
+        }
     }
 
     COMPILERCOMMAND = cfgVals("compileCommand");

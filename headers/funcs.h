@@ -12,3 +12,4 @@
 
 std::filesystem::path getExecFolder();
 std::filesystem::path getConfigPath();
+std::string getDefaultClangFile();

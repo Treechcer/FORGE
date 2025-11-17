@@ -13,7 +13,7 @@ std::filesystem::path getExecFolder() {
     char path[MAX_PATH];
     HMODULE hModule = GetModuleHandle(nullptr);
     if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
-        return std::filesystem::path(path);
+        return std::filesystem::path(path).parent_path();
     }
 #elifdef __linux__
     char path[PATH_MAX];
@@ -38,6 +38,34 @@ std::filesystem::path getConfigPath() {
     //std::cout << homedir << std::endl;
     return std::filesystem::path(std::string(homedir)) / ".config" / "FORGE";
 #elif defined(_WIN32)
+    std::cout << getExecFolder();
     return getExecFolder();
 #endif
+}
+
+std::string getDefaultClangFile(){
+    return R"(BasedOnStyle: LLVM
+IndentWidth: 4
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: Never
+AccessModifierOffset: 0
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Never
+AlwaysBreakAfterReturnType: None
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: false
+  BeforeElse: true
+  AfterFunction: false
+  AfterClass: false
+  AfterNamespace: true
+  AfterStruct: true
+  AfterEnum: true
+  AfterUnion: true
+
+ColumnLimit: 0 
+MaxEmptyLinesToKeep: 1
+    )";
 }

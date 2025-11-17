@@ -19,14 +19,14 @@ parser::parser(std::filesystem::path fileName) {
 
     std::filesystem::path execFolder = getExecFolder();
 
-    if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
-        std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
+    if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
+        std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
         ofs << parser::defaultConfig();
     }
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
         std::filesystem::create_directories(FORGEDATAPATH);
-        std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
         create();
     }
 
@@ -53,11 +53,13 @@ std::string parser::defaultConfig() {
 #ifdef __APPLE__
     return R"(hash false
 exeName "forge app.exe" -KEEP
-compileCommand "clang++ -std=c++17")";
+compileCommand "clang++ -std=c++17
+createClangFile true")";
 #else
     return R"(hash false
 exeName "forge app.exe" -KEEP
-compileCommand g++)";
+compileCommand g++
+createClangFile true)";
 #endif
 }
 
