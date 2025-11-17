@@ -463,13 +463,19 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::path execFolder = getExecFolder();
 
-    if (!std::filesystem::exists(execFolder.parent_path() / "forge.forgecfg")) {
-        std::ofstream ofs(execFolder.parent_path() / "forge.forgecfg");
+    CONFIGFOLDER = getConfigPath();
+
+    //std::cout << CONFIGFOLDER;
+
+    std::filesystem::create_directories(CONFIGFOLDER);
+
+    if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
+        std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
         ofs << parser::defaultConfig();
     }
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
-        std::filesystem::copy(execFolder.parent_path() / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
         create();
     }
 

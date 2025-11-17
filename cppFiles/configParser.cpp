@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-std::string COMPILERCOMMAND = "";
-
 void config(std::string config);
 
 parser::parser(std::filesystem::path fileName) {

@@ -1,9 +1,11 @@
 #include <filesystem>
+#include <iostream>
 #if defined(_WIN32)
 #include <windows.h>
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 #include <limits.h>
 #include <unistd.h>
+#include <pwd.h>
 #endif
 
 std::filesystem::path getExecFolder() {
@@ -28,4 +30,14 @@ std::filesystem::path getExecFolder() {
     }
 #endif
     return {};
+}
+
+std::filesystem::path getConfigPath() {
+#if defined(__linux__) || defined(__APPLE__)
+    const char *homedir = getpwuid(getuid())->pw_dir;
+    //std::cout << homedir << std::endl;
+    return std::filesystem::path(std::string(homedir)) / ".config" / "FORGE";
+#elif defined(_WIN32)
+    return getExecFolder();
+#endif
 }
