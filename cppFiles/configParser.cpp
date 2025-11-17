@@ -160,8 +160,8 @@ parser p(FORGEDATAPATH / "forge.forgecfg");
                 value.erase(value.size() - 1, 1);
             }
         }
-        std::cout << value << std::endl;
-        std::cout << flag << std::endl << quoteType << std::endl << quote << std::endl;
+        //std::cout << value << std::endl;
+        //std::cout << flag << std::endl << quoteType << std::endl << quote << std::endl;
 
         p.createFiles(key, value);
     }
