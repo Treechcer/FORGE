@@ -65,11 +65,11 @@ compileCommand g++)";
 
 void parser::createFiles(std::filesystem::path file, std::string value) {
 #if defined(__linux__) || defined(__APPLE__)
-    //this should work... I think lol
+    // this should work... I think lol - it didn't, last famous words
     if (file == "exeName"){
         value = std::regex_replace(value, std::regex("\\.exe$"), "");
-        value = std::regex_replace(value, std::regex("\\.exe'$"), "");
-        value = std::regex_replace(value, std::regex("\\.exe\"$"), "");
+        value = std::regex_replace(value, std::regex("\\.exe'$"), "'");
+        value = std::regex_replace(value, std::regex("\\.exe\"$"), "\"");
     }
 #endif
     std::filesystem::path wholePath = FORGEDATAPATH / file;
@@ -125,7 +125,7 @@ parser p(FORGEDATAPATH / "forge.forgecfg");
 
         std::string value = "";
 
-        bool quote = line[indexer] == '"';
+        bool quote = line[indexer] == '"' || line[indexer] == '\'';
         char quoteType = ' ';
         if (quote) {
             quoteType = line[indexer];
@@ -152,7 +152,7 @@ parser p(FORGEDATAPATH / "forge.forgecfg");
             }
         }
 
-        if (!(flag == "-keep" || flag == "-KEEP")) {
+        if (flag == "-keep" || flag == "-KEEP") {
             if (value[0] == '"' || value[0] == '\'') {
                 value.erase(0, 1);
             }
@@ -160,8 +160,8 @@ parser p(FORGEDATAPATH / "forge.forgecfg");
                 value.erase(value.size() - 1, 1);
             }
         }
-        //std::cout << value << std::endl;
-        //std::cout << flag << std::endl;
+        std::cout << value << std::endl;
+        std::cout << flag << std::endl << quoteType << std::endl << quote << std::endl;
 
         p.createFiles(key, value);
     }
