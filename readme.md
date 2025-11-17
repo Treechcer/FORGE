@@ -142,17 +142,51 @@ If you want to compile FORGE, the easiest way to compile it:
 g++ cppFiles/*.cpp -o forge.exe
 ```
 
+Then you have to edit your environmental variables and add to PATH folder where the
+`.exe` is, the PATH should be just to the folder not to specific file. After this
+forge should be accessible by calling forge (it's called by it's name, so if you
+changed the name from `forge.exe` to something else, you will have to call it
+by the name you named it.
+
 `Linux`:
 
-```pwsh
+```bash
 g++ cppFiles/*.cpp -o forge
 ```
 
+After it's compiled, you have to add into your PATH, the easiest would be to
+add into folder called `/usr/local/bin`, easiest way to do it is probably by
+using `mv` or `cp` commands.
+
+```bash
+mv forge /usr/local/bin/
+```
+
+> NOTE: `mv` can be substituted by `cp`.
+
+After this you should be able to call forge by just typing forge into your terminal,
+this should compile your current working directory or fail at it (if the directory
+doesn't contain .cpp files).
+
 `Mac OS`:
 
-```pwsh
+```pws
 clang++ -std=c++17 cppFiles/*.cpp -o forge
 ```
+
+After it's compiled, you have to add into your PATH, the easiest would be to
+add into folder called `/usr/local/bin`, easiest way to do it is probably by
+using `mv` or `cp` commands.
+
+```pwsh
+mv forge /usr/local/bin/
+```
+
+> NOTE: `mv` can be substituted by `cp`.
+
+After this you should be able to call forge by just typing forge into your terminal,
+this should compile your current working directory or fail at it (if the directory
+doesn't contain .cpp files).
 
 ## Future
 
