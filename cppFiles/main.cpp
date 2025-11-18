@@ -278,7 +278,7 @@ void writeOutVec(std::vector<std::filesystem::path> vec){
 }
 
 std::string getStaticLibCommand(){
-    staticLibPath = getFiles(STATICLIBS, staticLibPath, std::regex(".*\\.o$"), std::regex(".*\\.o$"));
+    staticLibPath = getFiles(STATICLIBS, staticLibPath, std::regex(".*\\.o$"), std::regex(".*\\.o$"), false);
     writeOutVec(staticLibPath);
     std::string output = "";
 
@@ -348,7 +348,12 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         //std::cout << cmd;;
         //std::exit(1);
         cmd.append((OUTPUTPATH / appName).string());
-        // std::cout << cmd;
+        std::cout << cmd << std::endl;
+        
+        for (int p = 0; p < staticLibPath.size(); p++){
+            std::cout << staticLibPath[p] << std::endl;
+        }
+
         int res = system(cmd.c_str());
         if (res != 0) {
             std::cout << "Compilation failed, on command : " << cmd;
