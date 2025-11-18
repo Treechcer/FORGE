@@ -2,3 +2,4 @@
 *.exe
 .FORGE
 .vscode
+LIBS/COMPILED
