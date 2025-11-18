@@ -22,8 +22,9 @@
 #endif
 
 void compileOne(std::filesystem::path pathAfter);
-void buildPorject(std::vector<std::filesystem::path> pathAfter);
-void creatingProject(bool writeOutEnd);
+void buildPorject(std::vector<std::filesystem::path> pathAfter, bool staticLib);
+void creatingProject(bool writeOutEnd = true, bool staticLib = false);
+bool compileAsStaticLib = false;
 
 std::vector<std::thread> threads;
 std::vector<std::filesystem::path> pathToCompile;
@@ -90,19 +91,24 @@ void compileWithThread() {
     threads.clear();
 }
 
-std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths, std::regex reg1, std::regex reg2) {
+std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths, std::regex reg1, std::regex reg2, bool ignoreLibs = true) {
     if (std::regex_match(dir.string(), std::regex(".*\\.git")) || std::regex_match(dir.string(), std::regex(".*\\.FORGE"))) {
         return paths;
     }
     for (const auto &entry : std::filesystem::directory_iterator(dir)) {
+        if (std::regex_search(entry.path().string(), std::regex("LIBS")) && ignoreLibs){
+            continue;
+        }
+
         std::string str = entry.path().string();
+
         // std::cout << str << std::endl;
         if (std::regex_match(str, reg1) || std::regex_match(str, reg2)) {
             // std::cout << entry.path() << "\n";
             paths.push_back(entry.path());
         }
         else if (entry.is_directory()) {
-            paths = getFiles(entry.path(), paths, reg1, reg2);
+            paths = getFiles(entry.path(), paths, reg1, reg2, ignoreLibs);
         }
     }
 
@@ -285,7 +291,7 @@ std::string getStaticLibCommand(){
     return output;
 }
 
-void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH) {
+void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH, bool staticLib) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
         if (pathAfter[i].extension() == ".h") {
@@ -336,21 +342,48 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
     std::string staticLibComm = getStaticLibCommand();
 
-    std::string cmd = COMPILERCOMMAND + " " + staticLibComm + " " + allObJs + "-o ";
-    //std::cout << cmd;;
-    //std::exit(1);
-    cmd.append((OUTPUTPATH / appName).string());
-    // std::cout << cmd;
-    int res = system(cmd.c_str());
-    if (res != 0) {
-        std::cout << "Compilation failed, on command : " << cmd;
-        exit(0);
+
+    if (!staticLib){
+        std::string cmd = COMPILERCOMMAND + " " + staticLibComm + " " + allObJs + "-o ";
+        //std::cout << cmd;;
+        //std::exit(1);
+        cmd.append((OUTPUTPATH / appName).string());
+        // std::cout << cmd;
+        int res = system(cmd.c_str());
+        if (res != 0) {
+            std::cout << "Compilation failed, on command : " << cmd;
+            exit(0);
+        }
+        // std::cout << cmd << std::endl;
     }
-    // std::cout << cmd << std::endl;
+    else{
+        std::filesystem::create_directories(LIBCOMPILE);
+        for (int i = 0; i < pathAfter.size(); i++) {
+            if (pathAfter[i].extension() == ".o" || pathAfter[i].extension() == ".h") {
+
+                std::regex regeXX = std::regex(std::regex_replace(FORGEPROJECTPATH.string(), std::regex(R"(\\)"), R"(\\)"));
+
+                std::filesystem::path tempPath = std::regex_replace(pathAfter[i].parent_path().string(), regeXX, "");
+
+                if (tempPath.string()[0] == '\\' || tempPath.string()[0] == '/') {
+                    std::string temp = tempPath.string();
+                    temp.erase(0,1);
+                    tempPath = std::filesystem::path (temp);
+                }
+
+                //std::cout << tempPath << std::endl;
+                std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
+                std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
+                std::filesystem::copy(pathAfter[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
+            }
+        }
+    }
 }
 
 int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
     std::filesystem::path execFolder = getExecFolder();
+    std::string mode = "NA";
+    int modeNumber = 0;
     for (int i = 0; i < argc; i++) {
         // std::cout << argv[i] << " " << i << std::endl;
         std::string cmd = argv[i];
@@ -376,60 +409,13 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
                 return 1;
             }
 
-            std::filesystem::remove_all(FORGEPROJECTPATH);
-
-            std::string nameBefore = parser::variableValueCreator("exeName");
-            parser::variableRewrite("exeName", "timeTest");
-            std::cout << "TimeTest Start now, max threads " << THREADNUMBER << std::endl;
-
-            std::vector<int> timesMS;
-
-            for (int j = 0; j < std::stoi(argv[i + 1]); j++) {
-                auto now = std::chrono::system_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-
-                creatingProject(false);
-
-                auto endTime = std::chrono::system_clock::now();
-                auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
-                std::cout << "time (ms): " << (msEnd - ms) << std::endl;
-                std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
-                // std::cout << "compiled times: " << j + 1 << std::endl;
-
-                int totalRuns = std::stoi(argv[i + 1]);
-                int done = j + 1;
-
-                int made = (done * 10) / totalRuns;
-                int notMade = 10 - made;
-                std::string outBar = "[";
-                outBar += std::string(made, '#');
-                outBar += std::string(notMade, '-');
-                outBar.append("]");
-
-                std::cout << std::ceil(((double)done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
-
-                timesMS.push_back(msEnd - ms);
-                if (j < std::stoi(argv[i + 1]) - 1) {
-                    std::filesystem::remove_all(FORGEPROJECTPATH);
-                    std::filesystem::create_directory(FORGEPROJECTPATH);
-                }
-                threads.clear();
+            if (mode != "NA") {
+                std::cout << "you can't combine modes: " + mode + ", -timeTest";
+                return 1;
             }
 
-            int sum = 0;
-            for (int j = 0; j < timesMS.size(); j++) {
-                sum += timesMS[j];
-            }
-            double avg = sum / std::stoi(argv[i + 1]);
-            std::cout << "average time (ms): " << avg << std::endl;
-            std::cout << "average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
-            std::cout << "total time (ms): " << sum << std::endl;
-            std::cout << "total time (s): " << std::ceil(((double)sum / 1000) * 100) / 100 << std::endl;
-            parser::variableRewrite("exeName", nameBefore);
-
-            std::filesystem::remove("timeTest.exe");
-
-            return 1;
+            mode = "-timeTest";
+            modeNumber = std::stoi(argv[i + 1]);
         }
         else if (cmd == "-thread") {
             if (std::stoi(argv[i + 1]) < 1) {
@@ -439,10 +425,73 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             THREADNUMBER = std::stoi(argv[i + 1]);
             i++;
         }
-        else if (cmd == "library"){
-            LIBRARIES = std::stoi(argv[i + 1]);
-            i++;
+        else if (cmd == "-staticLibCompile"){
+            if (mode != "NA"){
+                std::cout << "you can't combine modes: " + mode + ", -staticLibCompile";
+                return 1;
+            }
+
+            mode = "-staticLibCompile";
+            compileAsStaticLib = true;
         }
+    }
+
+    if (mode == "-timeTest"){
+        std::filesystem::remove_all(FORGEPROJECTPATH);
+
+        std::string nameBefore = parser::variableValueCreator("exeName");
+        parser::variableRewrite("exeName", "timeTest");
+        std::cout << "TimeTest Start now, max threads " << THREADNUMBER << std::endl;
+
+        std::vector<int> timesMS;
+
+        for (int j = 0; j < modeNumber; j++) {
+            auto now = std::chrono::system_clock::now();
+            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+
+            creatingProject(false);
+
+            auto endTime = std::chrono::system_clock::now();
+            auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
+            std::cout << "time (ms): " << (msEnd - ms) << std::endl;
+            std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
+            // std::cout << "compiled times: " << j + 1 << std::endl;
+
+            int totalRuns = modeNumber;
+            int done = j + 1;
+
+            int made = (done * 10) / totalRuns;
+            int notMade = 10 - made;
+            std::string outBar = "[";
+            outBar += std::string(made, '#');
+            outBar += std::string(notMade, '-');
+            outBar.append("]");
+
+            std::cout << std::ceil(((double)done / totalRuns * 100) * 100) / 100 << outBar << std::endl;
+
+            timesMS.push_back(msEnd - ms);
+            if (j < modeNumber - 1) {
+                std::filesystem::remove_all(FORGEPROJECTPATH);
+                std::filesystem::create_directory(FORGEPROJECTPATH);
+            }
+            threads.clear();
+        }
+
+        int sum = 0;
+        for (int j = 0; j < timesMS.size(); j++) {
+            sum += timesMS[j];
+        }
+        double avg = sum / modeNumber;
+        std::cout << "average time (ms): " << avg << std::endl;
+        std::cout << "average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
+        std::cout << "total time (ms): " << sum << std::endl;
+        std::cout << "total time (s): " << std::ceil(((double)sum / 1000) * 100) / 100 << std::endl;
+        parser::variableRewrite("exeName", nameBefore);
+
+        std::filesystem::remove("timeTest.exe");
+        std::filesystem::remove("timeTest");
+
+        return 1;
     }
 
     return 0;
@@ -463,7 +512,7 @@ void createDirs() {
     std::filesystem::create_directories(DYNAMICLIBS);
 }
 
-void creatingProject(bool writeOutEnd = true) {
+void creatingProject(bool writeOutEnd, bool staticLib) {
     pathToCompile.clear();
 
     std::vector<std::filesystem::path> paths;
@@ -487,7 +536,7 @@ void creatingProject(bool writeOutEnd = true) {
 
     compileWithThread();
 
-    buildPorject(changedPaths, OUTPUTPATH);
+    buildPorject(changedPaths, OUTPUTPATH, staticLib);
 
     // for (int i = 0; i < changedPaths.size(); i++){
     //    std::cout << changedPaths[i].extension();
@@ -581,7 +630,7 @@ int main(int argc, char *argv[]) {
 
     HASH = strToBool(cfgVals("hash"));
 
-    creatingProject();
+    creatingProject(true, compileAsStaticLib);
 
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
