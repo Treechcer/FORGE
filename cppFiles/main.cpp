@@ -280,7 +280,7 @@ std::string getStaticLibCommand(){
         output += staticLibPath[i].string() + " ";
     }
 
-    std::cout << output;
+    //std::cout << output;
 
     return output;
 }
@@ -337,7 +337,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     std::string staticLibComm = getStaticLibCommand();
 
     std::string cmd = COMPILERCOMMAND + " " + staticLibComm + " " + allObJs + "-o ";
-    //std::cout << cmd;
+    //std::cout << cmd;;
     //std::exit(1);
     cmd.append((OUTPUTPATH / appName).string());
     // std::cout << cmd;
@@ -493,8 +493,7 @@ void creatingProject(bool writeOutEnd = true) {
     //    std::cout << changedPaths[i].extension();
     //}
     if (writeOutEnd) {
-        std::cout << "You code was compiled into: " << cfgVals("exeName")
-                  << std::endl;
+        std::cout << "Your code was compiled into: " << cfgVals("exeName") << std::endl;
     }
 }
 
@@ -546,7 +545,7 @@ int main(int argc, char *argv[]) {
 
     if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
         std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
-        std::cout << CONFIGFOLDER / "forge.forgecfg";
+        //std::cout << CONFIGFOLDER / "forge.forgecfg";
         create();
     }
 

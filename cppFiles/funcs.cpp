@@ -40,7 +40,7 @@ std::filesystem::path getConfigPath() {
     //std::cout << homedir << std::endl;
     return std::filesystem::path(std::string(homedir)) / ".config" / "FORGE";
 #elif defined(_WIN32)
-    std::cout << getExecFolder();
+    //std::cout << getExecFolder();
     return getExecFolder();
 #endif
 }
