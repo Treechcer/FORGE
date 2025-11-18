@@ -28,6 +28,9 @@ void creatingProject(bool writeOutEnd);
 std::vector<std::thread> threads;
 std::vector<std::filesystem::path> pathToCompile;
 
+std::vector<std::filesystem::path> staticLibPath;
+std::vector<std::filesystem::path> dynamicLibPath;
+
 bool HASH = false;
 std::filesystem::path OUTPUTPATH = "";
 int THREADNUMBER = 4;
@@ -87,19 +90,19 @@ void compileWithThread() {
     threads.clear();
 }
 
-std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths) {
+std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vector<std::filesystem::path> paths, std::regex reg1, std::regex reg2) {
     if (std::regex_match(dir.string(), std::regex(".*\\.git")) || std::regex_match(dir.string(), std::regex(".*\\.FORGE"))) {
         return paths;
     }
     for (const auto &entry : std::filesystem::directory_iterator(dir)) {
         std::string str = entry.path().string();
         // std::cout << str << std::endl;
-        if (std::regex_match(str, std::regex(".*\\.cpp$")) || std::regex_match(str, std::regex(".*\\.h$"))) {
+        if (std::regex_match(str, reg1) || std::regex_match(str, reg2)) {
             // std::cout << entry.path() << "\n";
             paths.push_back(entry.path());
         }
         else if (entry.is_directory()) {
-            paths = getFiles(entry.path(), paths);
+            paths = getFiles(entry.path(), paths, reg1, reg2);
         }
     }
 
@@ -262,6 +265,26 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
+void writeOutVec(std::vector<std::filesystem::path> vec){
+    for (int i = 0; i < vec.size(); i++){
+        std::cout << vec[i].string() << std::endl;
+    }
+}
+
+std::string getStaticLibCommand(){
+    staticLibPath = getFiles(STATICLIBS, staticLibPath, std::regex(".*\\.o$"), std::regex(".*\\.o$"));
+    writeOutVec(staticLibPath);
+    std::string output = "";
+
+    for (int i = 0; i < staticLibPath.size(); i++) {
+        output += staticLibPath[i].string() + " ";
+    }
+
+    std::cout << output;
+
+    return output;
+}
+
 void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
@@ -311,7 +334,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         appName = quote + appName + quote;
     }
 
-    std::string cmd = COMPILERCOMMAND + " " + allObJs + "-o ";
+    std::string staticLibComm = getStaticLibCommand();
+
+    std::string cmd = COMPILERCOMMAND + " " + staticLibComm + " " + allObJs + "-o ";
+    //std::cout << cmd;
+    //std::exit(1);
     cmd.append((OUTPUTPATH / appName).string());
     // std::cout << cmd;
     int res = system(cmd.c_str());
@@ -422,9 +449,18 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 }
 
 void createDirs() {
+
+    //FORGE DIRS
+
     std::filesystem::create_directories(FORGEPATH);
     std::filesystem::create_directories(FORGEPROJECTPATH);
     std::filesystem::create_directories(FORGEDATAPATH);
+
+    //LIB DIRS
+
+    std::filesystem::create_directories(LIBS);
+    std::filesystem::create_directories(STATICLIBS);
+    std::filesystem::create_directories(DYNAMICLIBS);
 }
 
 void creatingProject(bool writeOutEnd = true) {
@@ -433,7 +469,7 @@ void creatingProject(bool writeOutEnd = true) {
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
-    paths = getFiles(thisDir, paths);
+    paths = getFiles(thisDir, paths, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"));
 
     changedPaths = changePaths(paths);
     copyHeaderFiles(paths, changedPaths);
@@ -539,8 +575,7 @@ int main(int argc, char *argv[]) {
     // system(("windres " + (execFolder.parent_path() /
     // "resources.rc").string()(execFolder.parent_path() / "resources.rc").string()
     // + "./.FORGE/PROJECT/resources.o").c_str());
-    SetFileAttributesA(FORGEPATH.string().c_str(),
-                       FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
+    SetFileAttributesA(FORGEPATH.string().c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 #endif
 
     create();
