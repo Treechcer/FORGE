@@ -54,12 +54,14 @@ std::string parser::defaultConfig() {
     return R"(hash false
 exeName "forge app.exe" -KEEP
 compileCommand "clang++ -std=c++17
-createClangFile true")";
+createClangFile true
+threads 4)";
 #else
     return R"(hash false
 exeName "forge app.exe" -KEEP
 compileCommand g++
-createClangFile true)";
+createClangFile true
+threads 4)";
 #endif
 }
 

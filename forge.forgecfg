@@ -2,3 +2,4 @@ hash false
 exeName "forge app.exe" -KEEP
 compileCommand g++
 createClangFile true
+threads 4

@@ -641,6 +641,12 @@ int main(int argc, char *argv[]) {
 
     COMPILERCOMMAND = cfgVals("compileCommand");
 
+    THREADNUMBER = stoi(cfgVals("threads"));
+
+    std::cout << THREADNUMBER;
+
+    std::exit(0);
+
     int inputStatus = checkInputs(argc, argv, currentDir);
 
     if (inputStatus == 1) {
