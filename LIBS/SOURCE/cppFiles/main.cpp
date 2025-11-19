@@ -394,7 +394,6 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
             else if (libCompile[i].extension() == ".cpp"){
                 if (!std::filesystem::exists(LIBFORGECOPIED / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename())) {
                     std::filesystem::create_directories(std::filesystem::path(LIBFORGECOPIED / tempPath));
-                    std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
                     std::filesystem::copy(libCompile[i], std::filesystem::path(LIBFORGECOPIED / tempPath), std::filesystem::copy_options::overwrite_existing);
 
                     std::string cmd = COMPILERCOMMAND;
