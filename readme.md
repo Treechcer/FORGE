@@ -55,6 +55,8 @@ subdirectories (`.DATA`, `.PROJECT`).
 Forge uses 3 folders, the fist one is main folder called `.FORGE` where are only
 store the subdirectories, called `.DATA` and `.PROJECT`. There can also be `.UPDATE`
 which is created right after using `.\forge -update` (that doesn't work for now*).
+Also theres's now `LIBS/` folde, where you can add into your libraries, in `LIBS/STATIC` is expected to add `.o` and `.h` files, if you're programming your own
+static library you have to add in int folder `LIBS/SRC` (not implemented yet, notw it takes all files from your directory - this will be fixed / changed later), also to compile into libraries you should look into chapter [Static Libraries](#static-libraries).
 
 > **NOTE**: .FORGE is hidden folder on windows and UNIX systems.
 
@@ -117,9 +119,35 @@ compileCommand "clang++ -std=c++17"
 
 > Note: if you change it from g++ to something else, you should have in mind that the compilation might not work if you use other compiler. That command looks like this (default): `g++ -c file1.cpp file1.cpp -o app.exe` this is mostly used if you remap your g++ command to something else.
 
+## inputs
+
+Inputs are used to change the behaviour of FORGE, you don't have to really use them, but they provide more functionality.
+
+### -timeTest {n}
+
+This is for testing how fast you can compile your project, the {n} stands for number of how many times you want to test it to get aaverage time.
+
+### -thread {n}
+
+This is used to change the number of threads, I want to also add it into config later but that can wait.
+
+### -staticLibraryCompile
+
+This is used if you want to compile into static library, more details in chapter about [Static Libraries](#static-libraries).
+
 ## Usage
 
 You have to use forge in your root of you C++ project (at the start of the whole project, "root" should be the same folder as github repo starts in most cases or where it would start), because the .exe will be outputted there, otherwise it might not work.
+
+### Library Compile
+
+#### Static Libraries
+
+To compile into library you have to call FORGE with parametre `-staticLibCompile` which compiles your library and places it into `LIBS/STATIC`.
+
+#### Dynamic Libraries
+
+This is not implemented yet, it'll be implemented in future.
 
 ## Installation
 
