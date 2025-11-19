@@ -47,7 +47,6 @@ Here are my tests and on what kind of hardware they were running on. Because I'm
 | raspbian | 12 (bookworm) | Raspberry pi 5 (8GB)                                                              | 5.27          | 131.7          | ✅      | Runs normally / as expected and everything seems to work                                                            |
 | raspbian | 12 (bookworm) | raspberry pi zero 2W                                                              | 49.45         | 1236.15        | ✅      | Runs normally / as expected and everything seems to work (NOTE: this was run without any active or passive cooling) |
 
-
 > NOTE: the test for determining if it works is compiling this script and then running it. Also the average time is taken from mode `.\forge -thread ${CPU cores} -timeTest 25` and then added as avg. time (s) and as total time (or just compiling this script 25 times).
 
 ## How it works?
@@ -62,8 +61,8 @@ subdirectories (`.DATA`, `.PROJECT`).
 Forge uses 3 folders, the fist one is main folder called `.FORGE` where are only
 store the subdirectories, called `.DATA` and `.PROJECT`. There can also be `.UPDATE`
 which is created right after using `.\forge -update` (that doesn't work for now*).
-Also theres's now `LIBS/` folde, where you can add into your libraries, in `LIBS/STATIC` is expected to add `.o` and `.h` files, if you're programming your own
-static library you have to add in int folder `LIBS/SRC` (not implemented yet, notw it takes all files from your directory - this will be fixed / changed later), also to compile into libraries you should look into chapter [Static Libraries](#static-libraries).
+Also theres's now `LIBS/` folder, where you can add into your libraries, in `LIBS/STATIC` is expected to add `.o` and `.h` files, if you're programming your own
+static library you have to add in int folder `LIBS/SRC` (not implemented yet, now it takes all files from your directory - this will be fixed / changed later), also to compile into libraries you should look into chapter [Static Libraries](#static-libraries).
 
 > **NOTE**: .FORGE is hidden folder on windows and UNIX systems.
 
@@ -106,6 +105,8 @@ Forge has config in file `forge.forgecfg` which is "key value" type of config (t
 hash false
 exeName "forge app.exe" -KEEP
 compileCommand g++
+createClangFile true
+threads 4
 ```
 
 For Mac Users:
@@ -113,7 +114,9 @@ For Mac Users:
 ```plaintext
 hash false
 exeName "forge app.exe" -KEEP
-compileCommand "clang++ -std=c++17"
+compileCommand "clang++ -std=c++17
+createClangFile true
+threads 4
 ```
 
 > NOTE: you can change the STD you're using, but 17 is the least to compile FORGE, which is why it's the default.
@@ -123,20 +126,22 @@ compileCommand "clang++ -std=c++17"
 - `hash` : This switches between Hash and Time mode to compare the values of files.
 - `exeName` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
 - `compileCommand` : This choses your your command for compiling (and for Mac OS because they use clang++).
+- `createClangFile` : This creates `.clang-format` file if it's true.
+- `threads` : This changes the number of threads.
 
 > Note: if you change it from g++ to something else, you should have in mind that the compilation might not work if you use other compiler. That command looks like this (default): `g++ -c file1.cpp file1.cpp -o app.exe` this is mostly used if you remap your g++ command to something else.
 
 ## inputs
 
-Inputs are used to change the behaviour of FORGE, you don't have to really use them, but they provide more functionality.
+Inputs are used to change the behavior of FORGE, you don't have to really use them, but they provide more functionality.
 
 ### -timeTest {n}
 
-This is for testing how fast you can compile your project, the {n} stands for number of how many times you want to test it to get aaverage time.
+This is for testing how fast you can compile your project, the {n} stands for number of how many times you want to test it to get average time.
 
 ### -thread {n}
 
-This is used to change the number of threads, I want to also add it into config later but that can wait.
+This changes the maximum number of threads, it's also in config but input is higher in the hierarchy and overwrites the config value.
 
 ### -staticLibraryCompile
 
@@ -254,4 +259,3 @@ because now the order matters which is bad and incorrect. I want to
 also fix the update function because now it doesn't work. Make
 the parser better and have more values to configure and maybe more
 flags if needed.
-
