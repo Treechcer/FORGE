@@ -38,6 +38,7 @@ std::filesystem::path getConfigPath() {
 #if defined(__linux__) || defined(__APPLE__)
     const char *homedir = getpwuid(getuid())->pw_dir;
     //std::cout << homedir << std::endl;
+    std::filesystem::create_directories(std::filesystem::path(std::string(homedir)) / ".config" / "FORGE");
     return std::filesystem::path(std::string(homedir)) / ".config" / "FORGE";
 #elif defined(_WIN32)
     //std::cout << getExecFolder();

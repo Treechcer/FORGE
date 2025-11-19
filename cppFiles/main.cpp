@@ -363,23 +363,44 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     }
     else{
         std::filesystem::create_directories(LIBCOMPILE);
-        for (int i = 0; i < pathAfter.size(); i++) {
-            if (pathAfter[i].extension() == ".o" || pathAfter[i].extension() == ".h") {
+        std::vector<std::filesystem::path> libCompile;
+        libCompile = getFiles(LIBSOURCE, libCompile, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"), false);
+        //writeOutVec(libCompile);
+        for (int i = 0; i < libCompile.size(); i++) {
+            std::regex regeXX;
+            if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
+                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
+            }
+            else if (libCompile[i].extension() == ".cpp") {
+                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
+            }
+            else{
+                std::exit(1);
+            }
 
-                std::regex regeXX = std::regex(std::regex_replace(FORGEPROJECTPATH.string(), std::regex(R"(\\)"), R"(\\)"));
+            std::filesystem::path tempPath = std::regex_replace(libCompile[i].parent_path().string(), regeXX, "");
 
-                std::filesystem::path tempPath = std::regex_replace(pathAfter[i].parent_path().string(), regeXX, "");
+            if (tempPath.string()[0] == '\\' || tempPath.string()[0] == '/') {
+                std::string temp = tempPath.string();
+                temp.erase(0, 1);
+                tempPath = std::filesystem::path(temp);
+            }
 
-                if (tempPath.string()[0] == '\\' || tempPath.string()[0] == '/') {
-                    std::string temp = tempPath.string();
-                    temp.erase(0,1);
-                    tempPath = std::filesystem::path (temp);
-                }
-
-                //std::cout << tempPath << std::endl;
+            if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
                 std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
-                std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
-                std::filesystem::copy(pathAfter[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
+                //std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
+                std::filesystem::copy(libCompile[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
+            }
+            else if (libCompile[i].extension() == ".cpp"){
+                if (!std::filesystem::exists(LIBFORGECOPIED / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename())) {
+                    std::filesystem::create_directories(std::filesystem::path(LIBFORGECOPIED / tempPath));
+                    std::filesystem::copy(libCompile[i], std::filesystem::path(LIBFORGECOPIED / tempPath), std::filesystem::copy_options::overwrite_existing);
+
+                    std::string cmd = COMPILERCOMMAND;
+                    cmd += " -c " + libCompile[i].string() + " -o " + std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
+                    system(cmd.c_str());
+                    //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
+                }
             }
         }
     }
@@ -509,12 +530,14 @@ void createDirs() {
     std::filesystem::create_directories(FORGEPATH);
     std::filesystem::create_directories(FORGEPROJECTPATH);
     std::filesystem::create_directories(FORGEDATAPATH);
+    std::filesystem::create_directories(LIBFORGECOPIED);
 
     //LIB DIRS
 
     std::filesystem::create_directories(LIBS);
     std::filesystem::create_directories(STATICLIBS);
     std::filesystem::create_directories(DYNAMICLIBS);
+    std::filesystem::create_directories(LIBSOURCE);
 }
 
 void creatingProject(bool writeOutEnd, bool staticLib) {

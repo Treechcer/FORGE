@@ -11,6 +11,9 @@ const std::filesystem::path LIBS = "LIBS";
 const std::filesystem::path STATICLIBS = LIBS / "STATIC";
 const std::filesystem::path DYNAMICLIBS = LIBS / "DYNAMIC";
 const std::filesystem::path LIBCOMPILE = LIBS / "COMPILED";
+const std::filesystem::path LIBSOURCE = LIBS / "SOURCE";
+
+const std::filesystem::path LIBFORGECOPIED = FORGEPATH / "LIBS" / "STATIC";
 
 //there are just GLOBALS that won't change values after value asighnment, they might statr with some value and then they cahnge
 
