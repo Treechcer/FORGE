@@ -18,6 +18,7 @@
     - [-timeTest {n}](#-timetest-n)
     - [-thread {n}](#-thread-n)
     - [-staticLibraryCompile](#-staticlibrarycompile)
+    - [-path](#-path)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -143,9 +144,15 @@ This is for testing how fast you can compile your project, the {n} stands for nu
 
 This changes the maximum number of threads, it's also in config but input is higher in the hierarchy and overwrites the config value.
 
+>NOTE: threads make you compile faster by executing each command on other thread, with maximum of threads you provide, if you have less file than threads the higher number won't make it faster (=> thread > .cpp files => doesn't make it faster).
+
 ### -staticLibraryCompile
 
 This is used if you want to compile into static library, more details in chapter about [Static Libraries](#static-libraries).
+
+### -path
+
+This changes the path where the executable file is outputted.
 
 ## Usage
 
