@@ -402,9 +402,14 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                     std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
                     std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
 
+                    std::cout <<std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename().string();
+
                     std::string cmd = COMPILERCOMMAND;
                     std::filesystem::path tempCompilePath = std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
-                    cmd += " -c " + libCompile[i].string() + " -o " + tempCompilePath.string();
+                    cmd += " -c ";
+                    cmd += libCompile[i].string();
+                    cmd += " -o ";
+                    cmd += tempCompilePath.string();
                     //system(cmd.c_str());
                     //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
                     compileCommands.push_back(cmd);

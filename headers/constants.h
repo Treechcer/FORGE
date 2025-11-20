@@ -13,7 +13,7 @@ const std::filesystem::path DYNAMICLIBS = LIBS / "DYNAMIC";
 const std::filesystem::path LIBCOMPILE = LIBS / "COMPILED";
 const std::filesystem::path LIBSOURCE = LIBS / "SOURCE";
 
-const std::filesystem::path LIBDOTFORGE  = FORGEPATH / "LIBS";
+const std::filesystem::path LIBDOTFORGE = FORGEPROJECTPATH / "LIBS";
 const std::filesystem::path LIBFORGECOPIED = LIBDOTFORGE / "STATIC";
 const std::filesystem::path LIBDOTFORGESRC = LIBDOTFORGE / "SOURCE";
 
