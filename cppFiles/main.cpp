@@ -212,8 +212,10 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         }
 
         if (copy) {
-            std::filesystem::create_directories(pathAfter[i].parent_path());
-            std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+            if (!compileAsStaticLib){
+                std::filesystem::create_directories(pathAfter[i].parent_path());
+                std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
+            }
 
             pathToCompile.push_back(pathAfter[i]);
             // compileOne(pathAfter[i]);
@@ -342,17 +344,14 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
     std::string staticLibComm = getStaticLibCommand();
 
-
-    if (!staticLib){
+    if (!compileAsStaticLib) {
         std::string cmd = COMPILERCOMMAND + " " + staticLibComm + " " + allObJs + "-o ";
         //std::cout << cmd;;
         //std::exit(1);
         cmd.append((OUTPUTPATH / appName).string());
         std::cout << cmd << std::endl;
         
-        for (int p = 0; p < staticLibPath.size(); p++){
-            std::cout << staticLibPath[p] << std::endl;
-        }
+        std::cout << staticLibComm;
 
         int res = system(cmd.c_str());
         if (res != 0) {
@@ -366,7 +365,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         std::vector<std::filesystem::path> libCompile;
         libCompile = getFiles(LIBSOURCE, libCompile, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"), false);
         //writeOutVec(libCompile);
-        for (int i = 0; i < libCompile.size(); i++) {
+        std::vector <std::string> compileCommands;
+            for (int i = 0; i < libCompile.size(); i++) {
+            std::cout << libCompile[i];
             std::regex regeXX;
             if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
                 regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
@@ -390,19 +391,30 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                 std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
                 //std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
                 std::filesystem::copy(libCompile[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
+
+                std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
+                std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
+                std::cout << std::filesystem::path(LIBDOTFORGESRC / tempPath) << std::endl;
             }
             else if (libCompile[i].extension() == ".cpp"){
-                if (!std::filesystem::exists(LIBFORGECOPIED / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename())) {
-                    std::filesystem::create_directories(std::filesystem::path(LIBFORGECOPIED / tempPath));
+                if (!std::filesystem::exists(LIBDOTFORGESRC / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename())) {
+                    std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
                     std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
-                    std::filesystem::copy(libCompile[i], std::filesystem::path(LIBFORGECOPIED / tempPath), std::filesystem::copy_options::overwrite_existing);
+                    std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
 
                     std::string cmd = COMPILERCOMMAND;
-                    cmd += " -c " + libCompile[i].string() + " -o " + std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
-                    system(cmd.c_str());
+                    std::filesystem::path tempCompilePath = std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
+                    cmd += " -c " + libCompile[i].string() + " -o " + tempCompilePath.string();
+                    //system(cmd.c_str());
                     //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
+                    compileCommands.push_back(cmd);
                 }
             }
+        }
+
+        for (int i = 0; i < compileCommands.size(); i++){
+            std::cout << compileCommands[i];
+            system(compileCommands[i].c_str());
         }
     }
 }
@@ -531,7 +543,11 @@ void createDirs() {
     std::filesystem::create_directories(FORGEPATH);
     std::filesystem::create_directories(FORGEPROJECTPATH);
     std::filesystem::create_directories(FORGEDATAPATH);
+
+    //LIB FORGE
+    std::filesystem::create_directories(LIBDOTFORGE);
     std::filesystem::create_directories(LIBFORGECOPIED);
+    std::filesystem::create_directories(LIBDOTFORGESRC);
 
     //LIB DIRS
 
@@ -562,10 +578,11 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     //}
 
     // compileAll(changedPaths);
+    if (!compileAsStaticLib) {
+        compileWithThread();
+    }
 
-    compileWithThread();
-
-    buildPorject(changedPaths, OUTPUTPATH, staticLib);
+    buildPorject(changedPaths, OUTPUTPATH, compileAsStaticLib);
 
     // for (int i = 0; i < changedPaths.size(); i++){
     //    std::cout << changedPaths[i].extension();
@@ -578,6 +595,7 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
 int main(int argc, char *argv[]) {
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+
     // std::cout << "start: " << ms << std::endl;
 
     // std::cout << std::filesystem::current_path() << std::endl;
@@ -585,6 +603,8 @@ int main(int argc, char *argv[]) {
     CONFIGFOLDER = getConfigPath();
 
     createDirs();
+
+    std::filesystem::copy(STATICLIBS, LIBFORGECOPIED, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing); // this is here so you you can compile it
 
     std::filesystem::path currentDir = std::filesystem::current_path();
 
@@ -642,10 +662,6 @@ int main(int argc, char *argv[]) {
     COMPILERCOMMAND = cfgVals("compileCommand");
 
     THREADNUMBER = stoi(cfgVals("threads"));
-
-    std::cout << THREADNUMBER;
-
-    std::exit(0);
 
     int inputStatus = checkInputs(argc, argv, currentDir);
 
