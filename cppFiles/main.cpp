@@ -604,7 +604,12 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     //    std::cout << changedPaths[i].extension();
     //}
     if (writeOutEnd) {
-        std::cout << "[ Your code was compiled into: " << cfgVals("exeName") << " ]" << std::endl;
+        if (!compileAsStaticLib){
+            std::cout << "[ Your code was compiled into: " << cfgVals("exeName") << " ]" << std::endl;
+        }
+        else if (compileAsStaticLib){
+            std::cout << "[ Your code was compiled into static library, it's int LIBS/COMPILED" << " ]" << std::endl;
+        }
     }
 }
 
