@@ -58,11 +58,11 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "Compilation failed, output path: " << pathAfter[i].string();
+            std::cout << "[ Compilation failed, output path: " << pathAfter[i].string() + "]" << std::endl;
             exit(0);
         }
 
-        std::cout << "Executin command:" << cmd << std::endl;
+        std::cout << "[ Executing command: " << cmd << " ]" << std::endl;
     }
 }
 
@@ -96,7 +96,7 @@ std::vector<std::filesystem::path> getFiles(std::filesystem::path dir, std::vect
         return paths;
     }
     for (const auto &entry : std::filesystem::directory_iterator(dir)) {
-        if (std::regex_search(entry.path().string(), std::regex("LIBS")) && ignoreLibs){
+        if (std::regex_search(entry.path().string(), std::regex("LIBS")) && ignoreLibs) {
             continue;
         }
 
@@ -212,7 +212,7 @@ int copyFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::fi
         }
 
         if (copy) {
-            if (!compileAsStaticLib){
+            if (!compileAsStaticLib) {
                 std::filesystem::create_directories(pathAfter[i].parent_path());
                 std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
             }
@@ -244,7 +244,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "Compilation failed, on command: " << cmd;
+            std::cout << "[ Compilation failed, on command: " << cmd << " ]" << std::endl;
             exit(0);
         }
     }
@@ -262,7 +262,7 @@ void compileOne(std::filesystem::path pathAfter) {
     // std::cout << cmd << std::endl;
     int res = system(cmd.c_str());
     if (res != 0) {
-        std::cout << "Compilation failed, output path: " << pathAfter.string();
+        std::cout << "[ Compilation failed, output path: " << pathAfter.string() + " ]";
         exit(0);
     }
 }
@@ -273,15 +273,21 @@ bool strToBool(std::string strBool) {
     return false;
 }
 
-void writeOutVec(std::vector<std::filesystem::path> vec){
-    for (int i = 0; i < vec.size(); i++){
+void writeOutVec(std::vector<std::filesystem::path> vec) {
+    std::cout << std::endl
+              << "[ EXECUTING DEV COMMAND ]" << std::endl
+              << std::endl;
+    for (int i = 0; i < vec.size(); i++) {
         std::cout << vec[i].string() << std::endl;
     }
+    std::cout << std::endl
+              << "[ DEV COMMAND EXECUTED ]" << std::endl
+              << std::endl;
 }
 
-std::string getStaticLibCommand(){
+std::string getStaticLibCommand() {
     staticLibPath = getFiles(STATICLIBS, staticLibPath, std::regex(".*\\.o$"), std::regex(".*\\.o$"), false);
-    writeOutVec(staticLibPath);
+    //writeOutVec(staticLibPath);
     std::string output = "";
 
     for (int i = 0; i < staticLibPath.size(); i++) {
@@ -315,7 +321,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         // std::cout << cmd;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "Compilation failed, output path: " << rcFile;
+            std::cout << "[ Compilation failed, output path: " << rcFile << " ]";
             exit(0);
         }
         allObJs.append(objFile.string() + " ");
@@ -349,25 +355,26 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         //std::cout << cmd;;
         //std::exit(1);
         cmd.append((OUTPUTPATH / appName).string());
-        std::cout << cmd << std::endl;
-        
-        std::cout << staticLibComm;
+        std::cout << "[ Executing command:" << cmd << " ]" << std::endl;
+
+        //std::cout << staticLibComm;
 
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "Compilation failed, on command : " << cmd;
+            std::cout << "[ Compilation failed, on command : " << cmd << " ]" << std::endl;
             exit(0);
         }
         // std::cout << cmd << std::endl;
     }
-    else{
+    else {
         std::filesystem::create_directories(LIBCOMPILE);
         std::vector<std::filesystem::path> libCompile;
         libCompile = getFiles(LIBSOURCE, libCompile, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"), false);
         //writeOutVec(libCompile);
-        std::vector <std::string> compileCommands;
-            for (int i = 0; i < libCompile.size(); i++) {
-            std::cout << libCompile[i];
+        std::vector<std::string> compileCommands;
+        //std::vector <std::vector <std::filesystem::path>> compilepathLibs;
+        for (int i = 0; i < libCompile.size(); i++) {
+            //std::cout << libCompile[i];
             std::regex regeXX;
             if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
                 regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
@@ -375,7 +382,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
             else if (libCompile[i].extension() == ".cpp") {
                 regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
             }
-            else{
+            else {
                 std::exit(1);
             }
 
@@ -394,15 +401,15 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
                 std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
                 std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
-                std::cout << std::filesystem::path(LIBDOTFORGESRC / tempPath) << std::endl;
+                //std::cout << std::filesystem::path(LIBDOTFORGESRC / tempPath) << std::endl;
             }
-            else if (libCompile[i].extension() == ".cpp"){
-                if (!std::filesystem::exists(LIBDOTFORGESRC / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename())) {
+            else if (libCompile[i].extension() == ".cpp") {
+                if (!std::filesystem::exists(LIBDOTFORGESRC / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBFORGECOPIED / tempPath / libCompile[i].filename().replace_extension(".o"))) {
                     std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
                     std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
                     std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
 
-                    std::cout <<std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename().string();
+                    //std::cout <<std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename().string();
 
                     std::string cmd = COMPILERCOMMAND;
                     std::filesystem::path tempCompilePath = std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
@@ -412,14 +419,18 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                     cmd += tempCompilePath.string();
                     //system(cmd.c_str());
                     //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
+                    //std::cout << tempPath << std::endl;
                     compileCommands.push_back(cmd);
+                    //compilepathLibs.push_back(std::vector<std::filesystem::path>{tempCompilePath, (LIBFORGECOPIED / tempCompilePath).root_directory()});
+                    //std::cout << "????" << LIBFORGECOPIED / (LIBFORGECOPIED / tempCompilePath).root_directory() << std::endl;
                 }
             }
         }
 
-        for (int i = 0; i < compileCommands.size(); i++){
-            std::cout << compileCommands[i];
+        for (int i = 0; i < compileCommands.size(); i++) {
+            //std::cout << compileCommands[i] << std::endl;
             system(compileCommands[i].c_str());
+            //std::filesystem::copy(compilepathLibs[i][0], compilepathLibs[i][1], std::filesystem::copy_options::overwrite_existing);
         }
     }
 }
@@ -444,7 +455,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if (cmd == "-timeTest") {
 
             if (i + 1 >= argc) {
-                std::cout << "you have to have another numeric argument after -timeTest";
+                std::cout << "You have to have another numeric argument after -timeTest";
                 return 1;
             }
 
@@ -454,7 +465,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             }
 
             if (mode != "NA") {
-                std::cout << "you can't combine modes: " + mode + ", -timeTest";
+                std::cout << "You can't combine modes: " + mode + ", -timeTest";
                 return 1;
             }
 
@@ -469,9 +480,9 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             THREADNUMBER = std::stoi(argv[i + 1]);
             i++;
         }
-        else if (cmd == "-staticLibCompile"){
-            if (mode != "NA"){
-                std::cout << "you can't combine modes: " + mode + ", -staticLibCompile";
+        else if (cmd == "-staticLibCompile") {
+            if (mode != "NA") {
+                std::cout << "You can't combine modes: " + mode + ", -staticLibCompile";
                 return 1;
             }
 
@@ -480,12 +491,12 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         }
     }
 
-    if (mode == "-timeTest"){
+    if (mode == "-timeTest") {
         std::filesystem::remove_all(FORGEPROJECTPATH);
 
         std::string nameBefore = parser::variableValueCreator("exeName");
         parser::variableRewrite("exeName", "timeTest");
-        std::cout << "TimeTest Start now, max threads " << THREADNUMBER << std::endl;
+        std::cout << "[ TimeTest Start now, max threads " << THREADNUMBER << " ]" << std::endl;
 
         std::vector<int> timesMS;
 
@@ -497,8 +508,8 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
             auto endTime = std::chrono::system_clock::now();
             auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
-            std::cout << "time (ms): " << (msEnd - ms) << std::endl;
-            std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
+            std::cout << "Time (ms): " << (msEnd - ms) << std::endl;
+            std::cout << "Time (s): " << double(msEnd - ms) / 1000 << std::endl;
             // std::cout << "compiled times: " << j + 1 << std::endl;
 
             int totalRuns = modeNumber;
@@ -526,10 +537,10 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             sum += timesMS[j];
         }
         double avg = sum / modeNumber;
-        std::cout << "average time (ms): " << avg << std::endl;
-        std::cout << "average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
-        std::cout << "total time (ms): " << sum << std::endl;
-        std::cout << "total time (s): " << std::ceil(((double)sum / 1000) * 100) / 100 << std::endl;
+        std::cout << "Average time (ms): " << avg << std::endl;
+        std::cout << "Average time (s): " << std::ceil((avg / 1000) * 100) / 100 << std::endl;
+        std::cout << "Total time (ms): " << sum << std::endl;
+        std::cout << "Total time (s): " << std::ceil(((double)sum / 1000) * 100) / 100 << std::endl;
         parser::variableRewrite("exeName", nameBefore);
 
         std::filesystem::remove("timeTest.exe");
@@ -593,7 +604,7 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     //    std::cout << changedPaths[i].extension();
     //}
     if (writeOutEnd) {
-        std::cout << "Your code was compiled into: " << cfgVals("exeName") << std::endl;
+        std::cout << "[ Your code was compiled into: " << cfgVals("exeName") << " ]" << std::endl;
     }
 }
 
@@ -619,22 +630,22 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::create_directories(CONFIGFOLDER);
 
-    if (!std::filesystem::exists(".gitignore")){
+    if (!std::filesystem::exists(".gitignore")) {
         std::ofstream ofs(".gitignore");
     }
 
-    if (std::filesystem::exists(".gitignore")){
+    if (std::filesystem::exists(".gitignore")) {
         bool exists = false;
         std::ifstream ifs(".gitignore");
         std::string line;
         while (std::getline(ifs, line)) {
-            if (line == ".FORGE"){
+            if (line == ".FORGE") {
                 exists = true;
                 break;
             }
         }
         ifs.close();
-        if (!exists){
+        if (!exists) {
             std::ofstream ofs(".gitignore");
             ofs << ".FORGE" << std::endl;
             ofs.close();
@@ -690,8 +701,8 @@ int main(int argc, char *argv[]) {
 
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
-    std::cout << "time (ms): " << (msEnd - ms) << std::endl;
-    std::cout << "time (s): " << double(msEnd - ms) / 1000 << std::endl;
+    std::cout << "Time (ms): " << (msEnd - ms) << std::endl;
+    std::cout << "Time (s): " << double(msEnd - ms) / 1000 << std::endl;
 
     return 0;
 }
