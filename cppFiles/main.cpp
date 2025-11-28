@@ -516,6 +516,19 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             mode = "-staticLibCompile";
             compileAsStaticLib = true;
         }
+        else if (cmd == "-C"){
+            //COMPILERCOMMAND
+
+            if (COMPILERCOMMAND == "g++"){
+                COMPILERCOMMAND = "gcc";
+            }
+            else if (COMPILERCOMMAND == "clang++"){
+                COMPILERCOMMAND = "clang";
+            }
+
+            SOURCEFILES = CPOSSIBLESOURCEFILES;
+            HEADERFILES = CPOSSIBLEHEADERFILES;
+        }
     }
 
     if (mode == "-timeTest") {

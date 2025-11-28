@@ -5,15 +5,21 @@
 #include <vector>
 #include "../headers/funcs.h"
 
+//Folders for basic FORGE paths
+
 const std::filesystem::path FORGEPATH = ".FORGE";
 const std::filesystem::path FORGEPROJECTPATH = FORGEPATH / ".PROJECT";
 const std::filesystem::path FORGEDATAPATH = FORGEPATH / ".DATA";
+
+//Folders for ./LIBS
 
 const std::filesystem::path LIBS = "LIBS";
 const std::filesystem::path STATICLIBS = LIBS / "STATIC";
 const std::filesystem::path DYNAMICLIBS = LIBS / "DYNAMIC";
 const std::filesystem::path LIBCOMPILE = LIBS / "COMPILED";
 const std::filesystem::path LIBSOURCE = LIBS / "SOURCE";
+
+//Folders for ./.FORGE/LIBS...
 
 const std::filesystem::path LIBDOTFORGE = FORGEPROJECTPATH / "LIBS";
 const std::filesystem::path LIBFORGECOPIED = LIBDOTFORGE / "STATIC";
@@ -25,5 +31,12 @@ inline std::string COMPILERCOMMAND; // I have to assighn this later, that's why 
 inline std::filesystem::path CONFIGFOLDER = getConfigPath();
 inline std::string LIBRARIES = "";
 
+//cpp file suffixes / extensions
+
 inline std::vector <std::regex> CPPPOSSIBLESOURCEFILES = {std::regex(".*\\.cpp$"), std::regex(".*\\.cc$"), std::regex(".*\\.cxx$"), std::regex(".*\\.c++$"), std::regex(".*\\.cp$")};
 inline std::vector <std::regex> CPPPOSSIBLEHEADERFILES = {std::regex(".*\\.h$"), std::regex(".*\\.hpp$"), std::regex(".*\\.hh$"), std::regex(".*\\.hxx$"), std::regex(".*\\.h++$")};
+
+//C file suffixes / extensions
+
+inline std::vector<std::regex> CPOSSIBLESOURCEFILES = {std::regex(".*\\.c$")};
+inline std::vector<std::regex> CPOSSIBLEHEADERFILES = {std::regex(".*\\.h$")};
