@@ -26,6 +26,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, bool staticLib);
 void creatingProject(bool writeOutEnd = true, bool staticLib = false);
 bool compileAsStaticLib = false;
 
+std::vector <std::regex> SOURCEFILES = CPPPOSSIBLESOURCEFILES;
+std::vector <std::regex> HEADERFILES = CPPPOSSIBLEHEADERFILES;
+
 std::vector<std::thread> threads;
 std::vector<std::filesystem::path> pathToCompile;
 
@@ -369,17 +372,28 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     else {
         std::filesystem::create_directories(LIBCOMPILE);
         std::vector<std::filesystem::path> libCompile;
-        libCompile = getFiles(LIBSOURCE, libCompile, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"), false);
+        for (int i = 0; i < SOURCEFILES.size(); i++){
+            libCompile = getFiles(LIBSOURCE, libCompile, SOURCEFILES[i], HEADERFILES[i], false);
+        }
         //writeOutVec(libCompile);
         std::vector<std::string> compileCommands;
         //std::vector <std::vector <std::filesystem::path>> compilepathLibs;
         for (int i = 0; i < libCompile.size(); i++) {
             //std::cout << libCompile[i];
             std::regex regeXX;
-            if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
+
+            bool isHeader = false;
+
+            for (int y = 0; y < SOURCEFILES.size(); y++){
+                if (std::regex_match(libCompile[i].extension().string(), HEADERFILES[y])) {
+                    isHeader = true;
+                }
+            }
+
+            if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h" || isHeader) {
                 regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
             }
-            else if (libCompile[i].extension() == ".cpp") {
+            else if (libCompile[i].extension() == ".cpp" || !isHeader) {
                 regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
             }
             else {
@@ -579,7 +593,11 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
-    paths = getFiles(thisDir, paths, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"));
+    //paths = getFiles(thisDir, paths, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"));
+
+    for (int i = 0; i < SOURCEFILES.size(); i++) {
+        paths = getFiles(LIBSOURCE, paths, SOURCEFILES[i], HEADERFILES[i], false);
+    }
 
     changedPaths = changePaths(paths);
     copyHeaderFiles(paths, changedPaths);

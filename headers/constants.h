@@ -1,6 +1,8 @@
 #pragma once
 
+#include <regex>
 #include <filesystem>
+#include <vector>
 #include "../headers/funcs.h"
 
 const std::filesystem::path FORGEPATH = ".FORGE";
@@ -22,3 +24,6 @@ const std::filesystem::path LIBDOTFORGESRC = LIBDOTFORGE / "SOURCE";
 inline std::string COMPILERCOMMAND; // I have to assighn this later, that's why it's not const, but it'll be treated like one
 inline std::filesystem::path CONFIGFOLDER = getConfigPath();
 inline std::string LIBRARIES = "";
+
+inline std::vector <std::regex> CPPPOSSIBLESOURCEFILES = {std::regex(".*\\.cpp$"), std::regex(".*\\.cc$"), std::regex(".*\\.cxx$"), std::regex(".*\\.c++$"), std::regex(".*\\.cp$")};
+inline std::vector <std::regex> CPPPOSSIBLEHEADERFILES = {std::regex(".*\\.h$"), std::regex(".*\\.hpp$"), std::regex(".*\\.hh$"), std::regex(".*\\.hxx$"), std::regex(".*\\.h++$")};
