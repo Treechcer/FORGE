@@ -26,8 +26,8 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, bool staticLib);
 void creatingProject(bool writeOutEnd = true, bool staticLib = false);
 bool compileAsStaticLib = false;
 
-std::vector <std::regex> SOURCEFILES = CPPPOSSIBLESOURCEFILES;
-std::vector <std::regex> HEADERFILES = CPPPOSSIBLEHEADERFILES;
+std::vector<std::regex> SOURCEFILES = CPPPOSSIBLESOURCEFILES;
+std::vector<std::regex> HEADERFILES = CPPPOSSIBLEHEADERFILES;
 
 std::vector<std::thread> threads;
 std::vector<std::filesystem::path> pathToCompile;
@@ -49,7 +49,7 @@ size_t hashString(std::string toHash) {
 
 void compileN(std::vector<std::filesystem::path> pathAfter) {
     for (int i = 0; i < pathAfter.size(); i++) {
-        for (int y = 0; y < SOURCEFILES.size(); y++){
+        for (int y = 0; y < SOURCEFILES.size(); y++) {
             if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
                 continue;
             }
@@ -134,11 +134,16 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
 
 void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
     for (int i = 0; i < pathAfter.size(); i++) {
-        for (int y = 0; y < SOURCEFILES.size(); y++) {
+        bool isHeader = false;
+        for (int y = 0; y < HEADERFILES.size(); y++) {
             if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
-                continue;
+                isHeader = true;
+                break;
             }
         }
+        if (!isHeader)
+            continue;
+
         bool copy = false;
 
         if (HASH) {
@@ -173,8 +178,7 @@ void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<
             std::filesystem::create_directories(pathAfter[i].parent_path());
             std::filesystem::copy(pathBefore[i], pathAfter[i], std::filesystem::copy_options::overwrite_existing);
 
-            pathToCompile.push_back(pathAfter[i]);
-            // compileOne(pathAfter[i]);
+            // Header files should not be compiled, so don't add to pathToCompile
         }
     }
 }
@@ -312,12 +316,16 @@ std::string getStaticLibCommand() {
 void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH, bool staticLib) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
-        for (int y = 0; y < SOURCEFILES.size(); y++) {
+        bool isHeader = false;
+        for (int y = 0; y < HEADERFILES.size(); y++) {
             if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
-                continue;
+                isHeader = true;
+                break;
             }
         }
-        allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
+        if (!isHeader) {
+            allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
+        }
     }
 
 #ifdef _WIN32
@@ -381,7 +389,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
     else {
         std::filesystem::create_directories(LIBCOMPILE);
         std::vector<std::filesystem::path> libCompile;
-        for (int i = 0; i < SOURCEFILES.size(); i++){
+        for (int i = 0; i < SOURCEFILES.size(); i++) {
             libCompile = getFiles(LIBSOURCE, libCompile, SOURCEFILES[i], HEADERFILES[i], false);
         }
         //writeOutVec(libCompile);
@@ -393,7 +401,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
             bool isHeader = false;
 
-            for (int y = 0; y < SOURCEFILES.size(); y++){
+            for (int y = 0; y < SOURCEFILES.size(); y++) {
                 if (std::regex_match(libCompile[i].extension().string(), HEADERFILES[y])) {
                     isHeader = true;
                 }
@@ -417,7 +425,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                 tempPath = std::filesystem::path(temp);
             }
 
-            for (int y = 0; y < SOURCEFILES.size(); y++){
+            for (int y = 0; y < SOURCEFILES.size(); y++) {
                 if (libCompile[i].extension() == ".o" || std::regex_match(libCompile[i].extension().string(), HEADERFILES[y])) {
                     std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
                     //std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
@@ -516,13 +524,13 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             mode = "-staticLibCompile";
             compileAsStaticLib = true;
         }
-        else if (cmd == "-C"){
+        else if (cmd == "-C") {
             //COMPILERCOMMAND
 
-            if (COMPILERCOMMAND == "g++"){
+            if (COMPILERCOMMAND == "g++") {
                 COMPILERCOMMAND = "gcc";
             }
-            else if (COMPILERCOMMAND == "clang++"){
+            else if (COMPILERCOMMAND == "clang++") {
                 COMPILERCOMMAND = "clang";
             }
 
@@ -619,10 +627,9 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     std::vector<std::filesystem::path> paths;
     std::vector<std::filesystem::path> changedPaths;
     std::filesystem::path thisDir = ".";
-    //paths = getFiles(thisDir, paths, std::regex(".*\\.cpp$"), std::regex(".*\\.h$"));
 
     for (int i = 0; i < SOURCEFILES.size(); i++) {
-        paths = getFiles(LIBSOURCE, paths, SOURCEFILES[i], HEADERFILES[i], false);
+        paths = getFiles(thisDir, paths, SOURCEFILES[i], HEADERFILES[i], true);
     }
 
     changedPaths = changePaths(paths);
@@ -648,11 +655,12 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     //    std::cout << changedPaths[i].extension();
     //}
     if (writeOutEnd) {
-        if (!compileAsStaticLib){
+        if (!compileAsStaticLib) {
             std::cout << "[ Your code was compiled into: " << cfgVals("exeName") << " ]" << std::endl;
         }
-        else if (compileAsStaticLib){
-            std::cout << "[ Your code was compiled into static library, it's int LIBS/COMPILED" << " ]" << std::endl;
+        else if (compileAsStaticLib) {
+            std::cout << "[ Your code was compiled into static library, it's int LIBS/COMPILED"
+                      << " ]" << std::endl;
         }
     }
 }
