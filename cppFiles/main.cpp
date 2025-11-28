@@ -260,7 +260,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
 
 void compileOne(std::filesystem::path pathAfter) {
     for (int y = 0; y < SOURCEFILES.size(); y++) {
-        if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+        if (std::regex_match(pathAfter.extension().string(), HEADERFILES[y])) {
             continue;
         }
     }
