@@ -49,9 +49,10 @@ size_t hashString(std::string toHash) {
 
 void compileN(std::vector<std::filesystem::path> pathAfter) {
     for (int i = 0; i < pathAfter.size(); i++) {
-
-        if (pathAfter[i].extension() == ".h") {
-            continue;
+        for (int y = 0; y < SOURCEFILES.size(); y++){
+            if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+                continue;
+            }
         }
 
         std::string cmd = COMPILERCOMMAND + " -c ";
@@ -133,8 +134,10 @@ std::vector<std::filesystem::path> changePaths(std::vector<std::filesystem::path
 
 void copyHeaderFiles(std::vector<std::filesystem::path> pathBefore, std::vector<std::filesystem::path> pathAfter) {
     for (int i = 0; i < pathAfter.size(); i++) {
-        if (!(pathAfter[i].extension() == ".h")) {
-            continue;
+        for (int y = 0; y < SOURCEFILES.size(); y++) {
+            if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+                continue;
+            }
         }
         bool copy = false;
 
@@ -236,8 +239,10 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         // g++ changedPaths[0] -o changedPaths[0].parent_path() /
         // changedPaths[0].replace_extension(".o") if (pathAfter[i].extension()){}
 
-        if (pathAfter[i].extension() == ".h") {
-            continue;
+        for (int y = 0; y < SOURCEFILES.size(); y++) {
+            if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+                continue;
+            }
         }
 
         std::string cmd = COMPILERCOMMAND + " -c ";
@@ -254,8 +259,10 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
 }
 
 void compileOne(std::filesystem::path pathAfter) {
-    if (pathAfter.extension() == ".h") {
-        return;
+    for (int y = 0; y < SOURCEFILES.size(); y++) {
+        if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+            continue;
+        }
     }
 
     std::string cmd = COMPILERCOMMAND + " -c ";
@@ -305,8 +312,10 @@ std::string getStaticLibCommand() {
 void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem::path OUTPUTPATH, bool staticLib) {
     std::string allObJs = "";
     for (int i = 0; i < pathAfter.size(); i++) {
-        if (pathAfter[i].extension() == ".h") {
-            continue;
+        for (int y = 0; y < SOURCEFILES.size(); y++) {
+            if (std::regex_match(pathAfter[i].extension().string(), HEADERFILES[y])) {
+                continue;
+            }
         }
         allObJs.append(pathAfter[i].replace_extension(".o").string() + " ");
     }
@@ -408,35 +417,39 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                 tempPath = std::filesystem::path(temp);
             }
 
-            if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h") {
-                std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
-                //std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
-                std::filesystem::copy(libCompile[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
-
-                std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
-                std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
-                //std::cout << std::filesystem::path(LIBDOTFORGESRC / tempPath) << std::endl;
-            }
-            else if (libCompile[i].extension() == ".cpp") {
-                if (!std::filesystem::exists(LIBDOTFORGESRC / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBDOTFORGESRC / tempPath / libCompile[i].filename())) {
-                    std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
+            for (int y = 0; y < SOURCEFILES.size(); y++){
+                if (libCompile[i].extension() == ".o" || std::regex_match(libCompile[i].extension().string(), HEADERFILES[y])) {
                     std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
+                    //std::cout << std::filesystem::path (LIBCOMPILE / tempPath).string() << std::endl;
+                    std::filesystem::copy(libCompile[i], std::filesystem::path(LIBCOMPILE / tempPath), std::filesystem::copy_options::overwrite_existing);
+
+                    std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
                     std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
+                    //std::cout << std::filesystem::path(LIBDOTFORGESRC / tempPath) << std::endl;
+                    break;
+                }
+                else if (std::regex_match(libCompile[i].extension().string(), SOURCEFILES[y])) {
+                    if (!std::filesystem::exists(LIBDOTFORGESRC / tempPath / libCompile[i].filename()) || std::filesystem::last_write_time(libCompile[i]) > std::filesystem::last_write_time(LIBDOTFORGESRC / tempPath / libCompile[i].filename())) {
+                        std::filesystem::create_directories(std::filesystem::path(LIBDOTFORGESRC / tempPath));
+                        std::filesystem::create_directories(std::filesystem::path(LIBCOMPILE / tempPath));
+                        std::filesystem::copy(libCompile[i], std::filesystem::path(LIBDOTFORGESRC / tempPath), std::filesystem::copy_options::overwrite_existing);
 
-                    //std::cout <<std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename().string();
+                        //std::cout <<std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename().string();
 
-                    std::string cmd = COMPILERCOMMAND;
-                    std::filesystem::path tempCompilePath = std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), std::regex("\\.cpp$"), ".o");
-                    cmd += " -c ";
-                    cmd += libCompile[i].string();
-                    cmd += " -o ";
-                    cmd += tempCompilePath.string();
-                    //system(cmd.c_str());
-                    //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
-                    //std::cout << tempPath << std::endl;
-                    compileCommands.push_back(cmd);
-                    //compilepathLibs.push_back(std::vector<std::filesystem::path>{tempCompilePath, (LIBFORGECOPIED / tempCompilePath).root_directory()});
-                    //std::cout << "????" << LIBFORGECOPIED / (LIBFORGECOPIED / tempCompilePath).root_directory() << std::endl;
+                        std::string cmd = COMPILERCOMMAND;
+                        std::filesystem::path tempCompilePath = std::regex_replace((std::filesystem::path(LIBCOMPILE / tempPath) / libCompile[i].filename()).string(), SOURCEFILES[y], ".o");
+                        cmd += " -c ";
+                        cmd += libCompile[i].string();
+                        cmd += " -o ";
+                        cmd += tempCompilePath.string();
+                        //system(cmd.c_str());
+                        //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
+                        //std::cout << tempPath << std::endl;
+                        compileCommands.push_back(cmd);
+                        //compilepathLibs.push_back(std::vector<std::filesystem::path>{tempCompilePath, (LIBFORGECOPIED / tempCompilePath).root_directory()});
+                        //std::cout << "????" << LIBFORGECOPIED / (LIBFORGECOPIED / tempCompilePath).root_directory() << std::endl;
+                        break;
+                    }
                 }
             }
         }
