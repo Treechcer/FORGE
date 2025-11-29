@@ -11,7 +11,7 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     std::string desktopFile = "";
     std::string name = cfgVals("exeName");
     std::filesystem::path exec = getExecFolder();
-    std::string term = (terminal) ? "True" : "False";
+    std::string term = (terminal) ? "true" : "false";
     desktopFile += "[Desktop Entry]\n";
     desktopFile += "Type=Application\n";
     desktopFile += "Name= " + name + "\n";
@@ -25,10 +25,10 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     ofs.close();
 
     std::filesystem::path home = std::getenv("HOME");
-    std::filesystem::create_directories(std::filesystem::path home / ".local" / "share" / "applications");
-    std::ofstream ofs(std::filesystem::path home / ".local" / "share" / "applications" / std::filesystem::path(name).replace_extension(".desktop"));
-    ofs << desktopFile;
-    ofs.close();
-    std::cout << std::filesystem::path home / ".local" / "share" / "applications";
+    std::filesystem::create_directories(home / ".local" / "share" / "applications");
+    std::ofstream ofs1(std::filesystem::path home / ".local" / "share" / "applications" / std::filesystem::path(name).replace_extension(".desktop"));
+    ofs1 << desktopFile;
+    ofs1.close();
+    std::cout << home / ".local" / "share" / "applications";
 #endif
 }
