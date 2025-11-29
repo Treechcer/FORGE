@@ -7,7 +7,7 @@
 
 void desktopFileCreate(bool terminal, bool instaEnd){
     std::cout << "TEST OUTPUT\n";
-#ifdef __LINUX__
+#ifdef __linux__
     std::string desktopFile = "";
     std::string name = cfgVals("exeName");
     std::filesystem::path exec = getExecFolder();
