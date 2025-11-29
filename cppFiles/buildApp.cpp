@@ -6,7 +6,8 @@
 #include <string>
 
 void desktopFileCreate(bool terminal, bool instaEnd){
-    #ifdef __LINUX__
+    std::cout << "TEST OUTPUT\n";
+#ifdef __LINUX__
     std::string desktopFile = "";
     std::string name = cfgVals("exeName");
     std::filesystem::path exec = getExecFolder();
@@ -28,5 +29,6 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     std::ofstream ofs(std::filesystem::path home / ".local" / "share" / "applications" / std::filesystem::path(name).replace_extension(".desktop"));
     ofs << desktopFile;
     ofs.close();
-    #endif
+    std::cout << std::filesystem::path home / ".local" / "share" / "applications";
+#endif
 }

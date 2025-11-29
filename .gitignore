@@ -3,3 +3,4 @@
 .FORGE
 .vscode
 LIBS/COMPILED
+linuxResources/*.desktop
