@@ -7,17 +7,18 @@
 
 void desktopFileCreate(bool terminal, bool instaEnd){
     std::cout << "TEST OUTPUT\n";
+
 #ifdef __linux__
     std::string desktopFile = "";
     std::string name = cfgVals("exeName");
     std::filesystem::path exec = getExecFolder();
     std::string term = (terminal) ? "true" : "false";
-    std::string icon = std::filesystem::absolute(LINUXRESOURCES / "icon.png").string();
+    std::string icon = (std::filesystem::absolute(LINUXRESOURCES) / "icon.png").string();
 
     desktopFile += "[Desktop Entry]\n";
     desktopFile += "Type=Application\n";
     desktopFile += "Name= " + name + "\n";
-    desktopFile += "Exec=\"" + std::filesystem::absolute((std::filesystem::path (".") / name).replace_extension("")).string() + "\"\n";
+    desktopFile += "Exec=\"" + std::filesystem::absolute((std::filesystem::path(name)).replace_extension("")).string() + "\"\n";
     desktopFile += "Terminal=" + term + "\n";
     desktopFile += "Icon=" + icon + "\n";
 
