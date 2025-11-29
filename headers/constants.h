@@ -40,3 +40,7 @@ inline std::vector <std::regex> CPPPOSSIBLEHEADERFILES = {std::regex(".*\\.h$"),
 
 inline std::vector<std::regex> CPOSSIBLESOURCEFILES = {std::regex(".*\\.c$")};
 inline std::vector<std::regex> CPOSSIBLEHEADERFILES = {std::regex(".*\\.h$")};
+
+//linux RSC
+
+inline std::filesystem::path LINUXRESOURCES = (std::filesystem::path) "." / "linuxResources";

@@ -1,3 +1,4 @@
+#include "../headers/buildApp.h"
 #include "../headers/configParser.h"
 #include "../headers/constants.h"
 #include "../headers/funcs.h"
@@ -661,6 +662,7 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
 }
 
 int main(int argc, char *argv[]) {
+    desktopFileCreate(true, false);
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
 
@@ -733,7 +735,7 @@ int main(int argc, char *argv[]) {
 
     std::string language = cfgVals("language");
 
-    std::cout << language << "\n";
+    //std::cout << language << "\n";
 
     if (language == "C") {
         COMPILERCOMMAND = cfgVals("compileCommandC");
