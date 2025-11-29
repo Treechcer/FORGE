@@ -15,6 +15,7 @@ std::filesystem::path getExecFolder() {
     char path[MAX_PATH];
     HMODULE hModule = GetModuleHandle(nullptr);
     if (hModule && GetModuleFileNameA(hModule, path, MAX_PATH)) {
+        //std::cout << std::filesystem::path(path).parent_path() << " ?? \n";
         return std::filesystem::path(path).parent_path();
     }
 #elifdef __linux__

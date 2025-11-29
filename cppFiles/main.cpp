@@ -330,9 +330,9 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
 #ifdef _WIN32
     std::filesystem::path execFolder = getExecFolder();
-    std::filesystem::path rcFile = execFolder.parent_path() / "windowsResources" / "resources.rc";
+    std::filesystem::path rcFile = execFolder / "windowsResources" / "resources.rc";
     std::filesystem::path objFile = (std::filesystem::path)FORGEPROJECTPATH / "resources.o";
-
+    //std::cout << rcFile;
     if (std::filesystem::exists(rcFile)) {
         // std::cout << execFolder << "\n" << rcFile << "\n" << objFile << "\n";
         std::string cmd = "windres ";
