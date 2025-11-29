@@ -527,12 +527,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if (cmd == "-C") {
             //COMPILERCOMMAND
 
-            if (COMPILERCOMMAND == "g++") {
-                COMPILERCOMMAND = "gcc";
-            }
-            else if (COMPILERCOMMAND == "clang++") {
-                COMPILERCOMMAND = "clang";
-            }
+            COMPILERCOMMAND = cfgVals("compileCommandC");
 
             SOURCEFILES = CPOSSIBLESOURCEFILES;
             HEADERFILES = CPOSSIBLEHEADERFILES;
@@ -735,6 +730,17 @@ int main(int argc, char *argv[]) {
     COMPILERCOMMAND = cfgVals("compileCommand");
 
     THREADNUMBER = stoi(cfgVals("threads"));
+
+    std::string language = cfgVals("language");
+
+    std::cout << language << "\n";
+
+    if (language == "C") {
+        COMPILERCOMMAND = cfgVals("compileCommandC");
+
+        SOURCEFILES = CPOSSIBLESOURCEFILES;
+        HEADERFILES = CPOSSIBLEHEADERFILES;
+    }
 
     int inputStatus = checkInputs(argc, argv, currentDir);
 
