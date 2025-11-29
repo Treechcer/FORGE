@@ -37,6 +37,7 @@ std::vector<std::filesystem::path> staticLibPath;
 std::vector<std::filesystem::path> dynamicLibPath;
 
 bool HASH = false;
+bool APPBUILD = false;
 std::filesystem::path OUTPUTPATH = "";
 int THREADNUMBER = 4;
 
@@ -533,6 +534,9 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             SOURCEFILES = CPOSSIBLESOURCEFILES;
             HEADERFILES = CPOSSIBLEHEADERFILES;
         }
+        else if (cmd == "-appBuild"){
+            APPBUILD = true;
+        }
     }
 
     if (mode == "-timeTest") {
@@ -662,7 +666,6 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
 }
 
 int main(int argc, char *argv[]) {
-    desktopFileCreate(true, false);
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
 
@@ -766,6 +769,11 @@ int main(int argc, char *argv[]) {
 
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
+
+    if (APPBUILD){
+        desktopFileCreate(true, true);
+    }
+
     std::cout << "Time (ms): " << (msEnd - ms) << std::endl;
     std::cout << "Time (s): " << double(msEnd - ms) / 1000 << std::endl;
 
