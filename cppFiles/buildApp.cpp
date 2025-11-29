@@ -18,8 +18,8 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     desktopFile += "Type=Application\n";
     desktopFile += "Name= " + name + "\n";
     desktopFile += "Exec=\"" + std::filesystem::absolute((std::filesystem::path (".") / name).replace_extension("")).string() + "\"\n";
-    desktopFile += "Terminal=" + term;
-    desktopFile += "Icon=" + icon;
+    desktopFile += "Terminal=" + term + "\n";
+    desktopFile += "Icon=" + icon + "\n";
 
     std::cout << desktopFile;
 
