@@ -24,7 +24,7 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     ofs.close();
 
     std::filesystem::path home = std::getenv("HOME");
-
+    std::filesystem::create_directories(std::filesystem::path home / ".local" / "share" / "applications");
     std::ofstream ofs(std::filesystem::path home / ".local" / "share" / "applications" / std::filesystem::path(name).replace_extension(".desktop"));
     ofs << desktopFile;
     ofs.close();
