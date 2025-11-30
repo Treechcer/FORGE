@@ -56,8 +56,6 @@ inline std::filesystem::path LINUXRESOURCES = (std::filesystem::path) "." / "lin
 inline std::filesystem::path LINUXAPPRESOURCES = LINUXRESOURCES / "APPS";
 //mac RSC
 
-inline std::string noExeAppName;
-
 inline std::filesystem::path MACRESOURCES;
 inline std::filesystem::path MACAPPRESOURCES;
 
@@ -66,7 +64,7 @@ inline std::filesystem::path MACCONTENTSMACOS;
 inline std::filesystem::path MACCONTENTSRESOURCES;
 
 inline void makeMacGlobals() {
-    std::string appName = std::filesystem::path(cfgVals("exeName")).replace_extension("").string();
+    std::string noExeAppName = std::filesystem::path(cfgVals("exeName")).replace_extension("").string();
 
     MACRESOURCES = (std::filesystem::path) "." / "macResources";
     MACAPPRESOURCES = MACRESOURCES / "APPS";
