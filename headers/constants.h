@@ -70,7 +70,7 @@ inline void makeMacGlobals() {
     noExeAppName = appName;
 
     noExeAppName = std::regex_replace(noExeAppName, std::regex("\""), "");
-    noExeAppName = std::regex_replace(noExeAppName, std::regex(" "), "\\ ");
+    //noExeAppName = std::regex_replace(noExeAppName, std::regex(" "), "\\ "); // terminal and C++ work differently apparently?
 
     MACRESOURCES = (std::filesystem::path) "." / "macResources";
     MACAPPRESOURCES = MACRESOURCES / "APPS";
