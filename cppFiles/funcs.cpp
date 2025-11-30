@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <pwd.h>
 #endif
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
 
 std::filesystem::path getExecFolder() {
 #ifdef _WIN32
