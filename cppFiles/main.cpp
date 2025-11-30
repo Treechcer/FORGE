@@ -351,7 +351,8 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 #endif
 
     // std::cout << allObJs << "\n";
-    std::string appName = cfgVals("exeName");;
+    std::string appName = cfgVals("exeName");
+    ;
     if (!appName.empty() && appName.back() == '\r') {
         appName.pop_back();
     }
@@ -410,10 +411,10 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
             }
 
             if (libCompile[i].extension() == ".o" || libCompile[i].extension() == ".h" || isHeader) {
-                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
+                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(std::string("\\\\")), std::string("\\\\\\\\")));
             }
             else if (libCompile[i].extension() == ".cpp" || !isHeader) {
-                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(R"(\\)"), R"(\\)"));
+                regeXX = std::regex(std::regex_replace(LIBSOURCE.string(), std::regex(std::string("\\\\")), std::string("\\\\\\\\")));
             }
             else {
                 std::exit(1);
@@ -534,7 +535,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             SOURCEFILES = CPOSSIBLESOURCEFILES;
             HEADERFILES = CPOSSIBLEHEADERFILES;
         }
-        else if (cmd == "-appBuild"){
+        else if (cmd == "-appBuild") {
             APPBUILD = true;
         }
     }
@@ -772,7 +773,7 @@ int main(int argc, char *argv[]) {
     auto endTime = std::chrono::system_clock::now();
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
 
-    if (APPBUILD){
+    if (APPBUILD) {
         desktopFileCreate(true, true);
     }
 
