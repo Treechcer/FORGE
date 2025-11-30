@@ -378,7 +378,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         //std::cout << cmd;;
         //std::exit(1);
         cmd.append((OUTPUTPATH / appName).string());
-        std::cout << "[ Executing command:" << cmd << " ]" << std::endl;
+        std::cout << "[ Executing command: " << cmd << " ]" << std::endl;
 
         //std::cout << staticLibComm;
 

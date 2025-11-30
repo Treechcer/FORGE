@@ -53,7 +53,7 @@ std::string parser::defaultConfig() {
 #ifdef __APPLE__
     return R"(hash false
 exeName "forge app.exe" -KEEP
-compileCommand "clang++ -std=c++17
+compileCommand "clang++ -std=c++17"
 createClangFile true
 threads 4
 language C++
@@ -72,7 +72,7 @@ compileCommandC gcc)";
 void parser::createFiles(std::filesystem::path file, std::string value) {
 #if defined(__linux__) || defined(__APPLE__)
     // this should work... I think lol - it didn't, last famous words
-    if (file == "exeName"){
+    if (file == "exeName") {
         value = std::regex_replace(value, std::regex("\\.exe$"), "");
         value = std::regex_replace(value, std::regex("\\.exe'$"), "'");
         value = std::regex_replace(value, std::regex("\\.exe\"$"), "\"");
