@@ -6,15 +6,15 @@
 #include <regex>
 #include <string>
 
-void desktopFileCreate(bool terminal, bool instaEnd){
+void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not set - FORGE default"){
     std::cout << "TEST OUTPUT\n";
-
-//#ifdef __linux__
+#ifdef __linux__
+    std::filesystem::create_directories(LINUXAPPRESOURCES);
     std::string desktopFile = "";
     std::string name = cfgVals("exeName");
     std::filesystem::path exec = getExecFolder();
     std::string term = (terminal) ? "true" : "false";
-    std::string icon = (std::filesystem::absolute(LINUXRESOURCES) / "icon.png").lexically_normal().string();
+    std::string icon = (std::filesystem::absolute(LINUXRESOURCES) / "FORGE.png").lexically_normal().string();
     std::string preExec = std::regex_replace(std::filesystem::absolute((std::filesystem::path(name)).replace_extension("")).string(), std::regex(" "), "\\ ");
     std::string execC = (instaEnd) ? preExec : "bash -c \"" + preExec + "; read -p 'Press Enter to exit...'\"";
 
@@ -27,7 +27,7 @@ void desktopFileCreate(bool terminal, bool instaEnd){
 
     std::cout << desktopFile;
 
-    std::ofstream ofs(LINUXRESOURCES / std::filesystem::path(name).replace_extension(".desktop"));
+    std::ofstream ofs(LINUXAPPRESOURCES / std::filesystem::path(name).replace_extension(".desktop"));
     ofs << desktopFile;
     ofs.close();
 
@@ -38,7 +38,41 @@ void desktopFileCreate(bool terminal, bool instaEnd){
     ofs1 << desktopFile;
     ofs1.close();
     std::cout << home / ".local" / "share" / "applications";
-//#elif defined (__APPLE__)
+#elif defined (__APPLE__)
     std::cout << "comming soon...";
-//#endif
+    std::filesystem::create_directories(MACAPPRESOURCES);
+    std::filesystem::create_directories(MACCONTENTSMACOS);
+    std::filesystem::create_directories(MACCONTENTSRESOURCES);
+
+    std::ofstream plist(MACCONTENTS / "Info.plist");
+    plist << R"(<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>)";
+    plist << "<key>CFBundleName</key>\n";
+    plist << "<string>" + noExeAppName + "</string>\n";
+
+    plist << "<key>CFBundleIdentifier</key>\n";
+    plist << "<string>" + "com.example." + noExeAppName + "</string>\n";
+
+    plist << "<key>CFBundleVersion</key>\n";
+    plist << "<string>" + version + "</string>\n";
+
+    plist << "<key>CFBundleShortVersionString</key>\n";
+    plist << "<string>" + version + "</string>\n";
+
+    plist << "<key>CFBundleExecutable</key>\n";
+    plist << "<string>" + noExeAppName + "</string>\n";
+
+    plist << "<key>CFBundleIconFile</key>\n";
+    plist << "<string>" + "icon.icns" + "</string>\n";
+
+    plist << R"(
+</dict>
+</plist>)";
+
+    std::filesystem::copy_file(MACRESOURCES / "FORGE.icns", MACCONTENTSRESOURCES / "icon.icns", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file(noExeAppName, MACCONTENTSMACOS / noExeAppName, std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::permissions(MACCONTENTSMACOS / noExeAppName, std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec | std::filesystem::perms::others_exec, std::filesystem::perm_options::add);
+#endif
 }

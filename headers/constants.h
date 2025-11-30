@@ -4,6 +4,10 @@
 #include <filesystem>
 #include <vector>
 #include "../headers/funcs.h"
+#include "../headers/configParser.h"
+
+static std::string appName = cfgVals("exeName");
+inline std::string noExeAppName = std::regex_replace(appName, std::regex("\\.exe$"), "");
 
 //Folders for basic FORGE paths
 
@@ -44,3 +48,12 @@ inline std::vector<std::regex> CPOSSIBLEHEADERFILES = {std::regex(".*\\.h$")};
 //linux RSC
 
 inline std::filesystem::path LINUXRESOURCES = (std::filesystem::path) "." / "linuxResources";
+inline std::filesystem::path LINUXAPPRESOURCES = LINUXRESOURCES / "APPS";
+//mac RSC
+
+inline std::filesystem::path MACRESOURCES = (std::filesystem::path) "." / "macResources";
+inline std::filesystem::path MACAPPRESOURCES = MACRESOURCES / "APPS";
+
+inline std::filesystem::path MACCONTENTS = MACAPPRESOURCES / (noExeAppName + ".app") / "Contents";
+inline std::filesystem::path MACCONTENTSMACOS = MACCONTENTS / "MacOS";
+inline std::filesystem::path MACCONTENTSRESOURCES = MACCONTENTS / "Resources";
