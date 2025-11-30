@@ -158,7 +158,7 @@ parser p(FORGEDATAPATH / "forge.forgecfg");
             }
         }
 
-        if (flag == "-keep" || flag == "-KEEP") {
+        if (!(flag == "-keep" || flag == "-KEEP")) {
             if (value[0] == '"' || value[0] == '\'') {
                 value.erase(0, 1);
             }
