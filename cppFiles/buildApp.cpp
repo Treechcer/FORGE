@@ -43,7 +43,9 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     makeMacGlobals();
 
     std::cout << "comming soon...";
+    std::filesystem::create_directories(MACRESOURCES);
     std::filesystem::create_directories(MACAPPRESOURCES);
+    std::filesystem::create_directories(MACCONTENTS);
     std::filesystem::create_directories(MACCONTENTSMACOS);
     std::filesystem::create_directories(MACCONTENTSRESOURCES);
 
