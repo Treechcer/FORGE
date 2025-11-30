@@ -65,8 +65,7 @@ inline std::filesystem::path MACCONTENTSMACOS;
 inline std::filesystem::path MACCONTENTSRESOURCES;
 
 inline void makeMacGlobals(){
-    std::string appName = cfgVals("exeName");
-    noExeAppName = std::regex_replace(appName, std::regex("\\.exe$"), "");
+    std::string appName = std::filesystem::path(cfgVals("exeName")).replace_extension("").string();
 
     MACRESOURCES = (std::filesystem::path) "." / "macResources";
     MACAPPRESOURCES = MACRESOURCES / "APPS";
