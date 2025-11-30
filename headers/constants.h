@@ -7,7 +7,8 @@
 #include <regex>
 #include <vector>
 
-struct debugPrint{
+struct debugPrint
+{
     debugPrint() {
         std::cout << "printing Debug";
     }
@@ -41,8 +42,8 @@ inline std::string LIBRARIES = "";
 
 //cpp file suffixes / extensions
 
-inline std::vector <std::regex> CPPPOSSIBLESOURCEFILES = {std::regex(".*\\.cpp$"), std::regex(".*\\.cc$"), std::regex(".*\\.cxx$"), std::regex(".*\\.c++$"), std::regex(".*\\.cp$")};
-inline std::vector <std::regex> CPPPOSSIBLEHEADERFILES = {std::regex(".*\\.h$"), std::regex(".*\\.hpp$"), std::regex(".*\\.hh$"), std::regex(".*\\.hxx$"), std::regex(".*\\.h++$")};
+inline std::vector<std::regex> CPPPOSSIBLESOURCEFILES = {std::regex(".*\\.cpp$"), std::regex(".*\\.cc$"), std::regex(".*\\.cxx$"), std::regex(".*\\.c\\+\\+$"), std::regex(".*\\.cp$")};
+inline std::vector<std::regex> CPPPOSSIBLEHEADERFILES = {std::regex(".*\\.h$"), std::regex(".*\\.hpp$"), std::regex(".*\\.hh$"), std::regex(".*\\.hxx$"), std::regex(".*\\.h\\+\\+$")};
 
 //C file suffixes / extensions
 
@@ -64,7 +65,7 @@ inline std::filesystem::path MACCONTENTS;
 inline std::filesystem::path MACCONTENTSMACOS;
 inline std::filesystem::path MACCONTENTSRESOURCES;
 
-inline void makeMacGlobals(){
+inline void makeMacGlobals() {
     std::string appName = std::filesystem::path(cfgVals("exeName")).replace_extension("").string();
 
     MACRESOURCES = (std::filesystem::path) "." / "macResources";
