@@ -65,7 +65,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
         int res = system(cmd.c_str());
         if (res != 0) {
             std::cout << "[ Compilation failed, output path: " << pathAfter[i].string() + "]" << std::endl;
-            exit(0);
+            exit(1);
         }
 
         std::cout << "[ Executing command: " << cmd << " ]" << std::endl;
@@ -259,7 +259,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         int res = system(cmd.c_str());
         if (res != 0) {
             std::cout << "[ Compilation failed, on command: " << cmd << " ]" << std::endl;
-            exit(0);
+            exit(1);
         }
     }
 }
@@ -279,7 +279,7 @@ void compileOne(std::filesystem::path pathAfter) {
     int res = system(cmd.c_str());
     if (res != 0) {
         std::cout << "[ Compilation failed, output path: " << pathAfter.string() + " ]";
-        exit(0);
+        exit(1);
     }
 }
 
@@ -344,14 +344,14 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         int res = system(cmd.c_str());
         if (res != 0) {
             std::cout << "[ Compilation failed, output path: " << rcFile << " ]";
-            exit(0);
+            exit(1);
         }
         allObJs.append(objFile.string() + " ");
     }
 #endif
 
     // std::cout << allObJs << "\n";
-    std::string appName = cfgVals("exeName");
+    std::string appName = cfgVals("exeName");;
     if (!appName.empty() && appName.back() == '\r') {
         appName.pop_back();
     }
@@ -384,7 +384,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         int res = system(cmd.c_str());
         if (res != 0) {
             std::cout << "[ Compilation failed, on command : " << cmd << " ]" << std::endl;
-            exit(0);
+            exit(1);
         }
         // std::cout << cmd << std::endl;
     }
@@ -682,6 +682,8 @@ int main(int argc, char *argv[]) {
     std::filesystem::path currentDir = std::filesystem::current_path();
 
     std::filesystem::path execFolder = getExecFolder();
+
+    //std::cout << "test";
 
     // std::cout << CONFIGFOLDER;
 

@@ -1,13 +1,17 @@
 #pragma once
 
-#include <regex>
-#include <filesystem>
-#include <vector>
-#include "../headers/funcs.h"
 #include "../headers/configParser.h"
+#include "../headers/funcs.h"
+#include <filesystem>
+#include <iostream>
+#include <regex>
+#include <vector>
 
-static std::string appName = cfgVals("exeName");
-inline std::string noExeAppName = std::regex_replace(appName, std::regex("\\.exe$"), "");
+struct debugPrint{
+    debugPrint() {
+        std::cout << "printing Debug";
+    }
+};
 
 //Folders for basic FORGE paths
 
@@ -51,9 +55,23 @@ inline std::filesystem::path LINUXRESOURCES = (std::filesystem::path) "." / "lin
 inline std::filesystem::path LINUXAPPRESOURCES = LINUXRESOURCES / "APPS";
 //mac RSC
 
-inline std::filesystem::path MACRESOURCES = (std::filesystem::path) "." / "macResources";
-inline std::filesystem::path MACAPPRESOURCES = MACRESOURCES / "APPS";
+inline std::string noExeAppName;
 
-inline std::filesystem::path MACCONTENTS = MACAPPRESOURCES / (noExeAppName + ".app") / "Contents";
-inline std::filesystem::path MACCONTENTSMACOS = MACCONTENTS / "MacOS";
-inline std::filesystem::path MACCONTENTSRESOURCES = MACCONTENTS / "Resources";
+inline std::filesystem::path MACRESOURCES;
+inline std::filesystem::path MACAPPRESOURCES;
+
+inline std::filesystem::path MACCONTENTS;
+inline std::filesystem::path MACCONTENTSMACOS;
+inline std::filesystem::path MACCONTENTSRESOURCES;
+
+inline void makeMacGlobals(){
+    std::string appName = cfgVals("exeName");
+    noExeAppName = std::regex_replace(appName, std::regex("\\.exe$"), "");
+
+    MACRESOURCES = (std::filesystem::path) "." / "macResources";
+    MACAPPRESOURCES = MACRESOURCES / "APPS";
+
+    MACCONTENTS = MACAPPRESOURCES / (noExeAppName + ".app") / "Contents";
+    MACCONTENTSMACOS = MACCONTENTS / "MacOS";
+    MACCONTENTSRESOURCES = MACCONTENTS / "Resources";
+}

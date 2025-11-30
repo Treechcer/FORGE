@@ -40,6 +40,8 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     std::cout << home / ".local" / "share" / "applications";
 //#endif
 #elif defined (__APPLE__)
+    makeMacGlobals();
+
     std::cout << "comming soon...";
     std::filesystem::create_directories(MACAPPRESOURCES);
     std::filesystem::create_directories(MACCONTENTSMACOS);
