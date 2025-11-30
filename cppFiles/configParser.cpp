@@ -53,7 +53,7 @@ std::string parser::defaultConfig() {
 #ifdef __APPLE__
     return R"(hash false
 exeName "forge app.exe" -KEEP
-compileCommand "clang++ -std=c++17"
+compileCommand "clang++ --std=c++17"
 createClangFile true
 threads 4
 language C++
