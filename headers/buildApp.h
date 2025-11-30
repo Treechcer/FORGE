@@ -8,4 +8,4 @@
 #include <regex>
 #include <string>
 
-void desktopFileCreate(bool terminal, bool instaEnd);
+void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not set - FORGE default");

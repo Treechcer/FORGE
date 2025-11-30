@@ -38,6 +38,7 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     ofs1 << desktopFile;
     ofs1.close();
     std::cout << home / ".local" / "share" / "applications";
+//#endif
 #elif defined (__APPLE__)
     std::cout << "comming soon...";
     std::filesystem::create_directories(MACAPPRESOURCES);
@@ -53,7 +54,7 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     plist << "<string>" + noExeAppName + "</string>\n";
 
     plist << "<key>CFBundleIdentifier</key>\n";
-    plist << "<string>" + "com.example." + noExeAppName + "</string>\n";
+    plist << "<string>" << "com.example." << noExeAppName + "</string>\n";
 
     plist << "<key>CFBundleVersion</key>\n";
     plist << "<string>" + version + "</string>\n";
@@ -65,7 +66,7 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     plist << "<string>" + noExeAppName + "</string>\n";
 
     plist << "<key>CFBundleIconFile</key>\n";
-    plist << "<string>" + "icon.icns" + "</string>\n";
+    plist << "<string>" << "icon.icns" << "</string>\n";
 
     plist << R"(
 </dict>
