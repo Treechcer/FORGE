@@ -64,7 +64,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "[ Compilation failed, output path: " << pathAfter[i].string() + "]" << std::endl;
+            std::cout << "[ Compilation failed on command: " << cmd << " ]" << std::endl;
             exit(1);
         }
 
@@ -258,7 +258,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "[ Compilation failed, on command: " << cmd << " ]" << std::endl;
+            std::cout << "[ Compilation failed on command: " << cmd << " ]" << std::endl;
             exit(1);
         }
     }
@@ -278,7 +278,7 @@ void compileOne(std::filesystem::path pathAfter) {
     // std::cout << cmd << std::endl;
     int res = system(cmd.c_str());
     if (res != 0) {
-        std::cout << "[ Compilation failed, output path: " << pathAfter.string() + " ]";
+        std::cout << "[ Compilation failed on command: " << cmd << " ]" << std::endl;
         exit(1);
     }
 }
@@ -343,7 +343,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         // std::cout << cmd;
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "[ Compilation failed, output path: " << rcFile << " ]";
+            std::cout << "[ Compilation failed on command: " << cmd << " ]" << std::endl;
             exit(1);
         }
         allObJs.append(objFile.string() + " ");
@@ -384,7 +384,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
         int res = system(cmd.c_str());
         if (res != 0) {
-            std::cout << "[ Compilation failed, on command : " << cmd << " ]" << std::endl;
+            std::cout << "[ Compilation failed on command: " << cmd << " ]" << std::endl;
             exit(1);
         }
         // std::cout << cmd << std::endl;
