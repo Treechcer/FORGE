@@ -15,10 +15,13 @@
   - [config](#config)
     - [config values](#config-values)
   - [inputs](#inputs)
+    - [-update](#-update)
+    - [-path](#-path)
     - [-timeTest {n}](#-timetest-n)
     - [-thread {n}](#-thread-n)
     - [-staticLibraryCompile](#-staticlibrarycompile)
-    - [-path](#-path)
+    - [-C](#-c)
+    - [-appBuild](#-appbuild)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -136,6 +139,16 @@ threads 4
 
 Inputs are used to change the behavior of FORGE, you don't have to really use them, but they provide more functionality.
 
+### -update
+
+This should update FORGE from GitHub to the newest version.
+
+>NOTE: This takes the newest commit and compiles it, main branch isn't always the perfect version, I'd recommend using version from releases (if they're moderately new).
+
+### -path
+
+This changes the path where the executable file is outputted.
+
 ### -timeTest {n}
 
 This is for testing how fast you can compile your project, the {n} stands for number of how many times you want to test it to get average time.
@@ -150,9 +163,21 @@ This changes the maximum number of threads, it's also in config but input is hig
 
 This is used if you want to compile into static library, more details in chapter about [Static Libraries](#static-libraries).
 
-### -path
+### -C
 
-This changes the path where the executable file is outputted.
+This command is "switch" command, using this command makes you compile C code instead of C++ code.
+
+### -appBuild
+
+This is used only for MacOS and Linux to build whole app.
+
+>Note: Windows automatically builds .exe files as app, because windows works differently with apps than MacOS and Linux.
+
+To change your icon, you have to go to `./OSResource/` and change the icon file, they're always called `FORGE.*` and if you want to change your icon you have to change that file to your desirable icon, you have to follow the name FORGE and the extension (`.ico` - Windows, `.incs` - MacOS and `.png` for Linux).
+
+>Note: Linux app is just `.desktop` file that's saved in `./linuxResources/appName.desktop` and also in `${home}/.local/share/applications/appName.desktop`. Most DEs support this as App and should be accessible in your app search.
+---
+>Note2: App Building isn't 100% finished yet, some functions will be added later, because not everything can be changed and now is really opinionated (because it's not finished but it'll be changed).
 
 ## Usage
 

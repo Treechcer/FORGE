@@ -538,6 +538,13 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if (cmd == "-appBuild") {
             APPBUILD = true;
         }
+        else if(i == 0){
+            continue;
+        }
+        else{
+            std::cout << "[ This input \"" + cmd + "\" isn't found ]";
+            std::exit(1);
+        }
     }
 
     if (mode == "-timeTest") {
