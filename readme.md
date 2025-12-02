@@ -5,8 +5,11 @@
 - [FORGE](#forge)
   - [Table of Contents (ToC)](#table-of-contents-toc)
   - [intro](#intro)
+  - [Contributing](#contributing)
   - [Tested platforms](#tested-platforms)
   - [How it works?](#how-it-works)
+  - [Why FORGE?](#why-forge)
+    - [Shortcomings of FORGE](#shortcomings-of-forge)
   - [Folders](#folders)
     - [Hash Mode](#hash-mode)
     - [Time Mode](#time-mode)
@@ -33,10 +36,15 @@
     - [Compile yourself](#compile-yourself)
     - [Compiling command](#compiling-command)
   - [Future](#future)
+  - [License](#license)
 
 ## intro
 
 Forge is multi platform script (Windows, Linux and Mac OS) that compiles C++ code, into `.exe` files effectively. Forge uses g++ / clang++ to compile to .exe, you have to have g++ / clang++ to use this, without it, it'll not work.
+
+## Contributing
+
+If you want to contribute just fork this repo, make your changes with sufficient documentation (`no` README.MD change required), when you do that just open a new PR.
 
 ## Tested platforms
 
@@ -59,6 +67,16 @@ Forge checks all `.cpp` and `.h` files in directory, then it checks them if they
 should be switched and compiled into object files (`.o`), this has two
 modes, Hash and Time. It moves the files into `.FORGE` folder and it's
 subdirectories (`.DATA`, `.PROJECT`).
+
+## Why FORGE?
+
+Because FORGE is cross-platform for all major platforms (Linux, windows, MacOS). Easy to use, there isn't many things to change or configure nor it has many
+possible inputs. It being really minimalistic and using `>3.5 MB` on your disc. Easier than scripts for similar functionality (CMAKE, MAKE...) - Of course you lose
+some functionality. I recommend using FORGE even for faster compile time (because every time you use it you don't have to compile everything, only needed / changed stuff).
+
+### Shortcomings of FORGE
+
+No IDE integration, it's just plain script. Only **partial** library support (making just static ones - and in `.o` format and not in `.lib` or similar format).
 
 ## Folders
 
@@ -105,12 +123,16 @@ It adds `.ico` file to your .exe from what's in the file you have forge saved in
 
 Forge has config in file `forge.forgecfg` which is "key value" type of config (the newest parser also supports `flags` the only one is -keep which is used if you use string with spaces by using either ' or " and then your whole string and -keep makes you it retain the quotation marks), where spaces split the key and values (+ flags) and saves them. Default config should look something like this:
 
+(Linux, Mac)
+
 ```plaintext
 hash false
 exeName "forge app.exe" -KEEP
 compileCommand g++
 createClangFile true
 threads 4
+language C++
+compileCommandC gcc
 ```
 
 For Mac Users:
@@ -118,9 +140,11 @@ For Mac Users:
 ```plaintext
 hash false
 exeName "forge app.exe" -KEEP
-compileCommand "clang++ -std=c++17
+compileCommand "clang++ --std=c++17"
 createClangFile true
 threads 4
+language C++
+compileCommandC clang
 ```
 
 > NOTE: you can change the STD you're using, but 17 is the least to compile FORGE, which is why it's the default.
@@ -291,3 +315,7 @@ because now the order matters which is bad and incorrect. I want to
 also fix the update function because now it doesn't work. Make
 the parser better and have more values to configure and maybe more
 flags if needed.
+
+## License
+
+FORGE is distributed under the MIT License.
