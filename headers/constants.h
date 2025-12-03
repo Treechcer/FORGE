@@ -1,3 +1,5 @@
+//this file is more like "GLOBALS" than constants but whatever, not changing it
+
 #pragma once
 
 #include "../headers/configParser.h"
@@ -79,3 +81,9 @@ inline void makeMacGlobals() {
     MACCONTENTSMACOS = MACCONTENTS / "MacOS";
     MACCONTENTSRESOURCES = MACCONTENTS / "Resources";
 }
+
+//APP BUILD INPUTS
+
+bool TERMINALAPP = true;
+bool INSTAENDAPP = true;
+std::string VERSIONOFAPP = "not set - FORGE default";

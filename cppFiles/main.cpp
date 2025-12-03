@@ -541,6 +541,18 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if(i == 0){
             continue;
         }
+        else if (cmd == "-appVer"){
+            VERSIONOFAPP = strToBool(argv[i+1]);
+            i++;
+        }
+        else if (cmd == "-instaEndApp"){
+            INSTAENDAPP = strToBool(argv[i + 1]);
+            i++;
+        }
+        else if (cmd == "-terminalApp"){
+            TERMINALAPP = strToBool(argv[i + 1]);
+            i++;
+        }
         else{
             std::cout << "[ This input \"" + cmd + "\" isn't found ]";
             std::exit(1);
@@ -781,7 +793,7 @@ int main(int argc, char *argv[]) {
     auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
 
     if (APPBUILD) {
-        desktopFileCreate(true, true);
+        desktopFileCreate(TERMINALAPP, INSTAENDAPP, VERSIONOFAPP);
     }
 
     std::cout << "Time (ms): " << (msEnd - ms) << std::endl;
