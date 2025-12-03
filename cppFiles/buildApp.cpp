@@ -16,7 +16,7 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     std::string term = (terminal) ? "true" : "false";
     std::string icon = (std::filesystem::absolute(LINUXRESOURCES) / "FORGE.png").lexically_normal().string();
     std::string preExec = std::regex_replace(std::filesystem::absolute((std::filesystem::path(name)).replace_extension("")).string(), std::regex(" "), "\\ ");
-    std::string execC = (instaEnd) ? preExec : "bash -c \"" + preExec + "; read -p 'Press Enter to exit...'\"";
+    std::string execC = (instaEnd) ? preExec : "bash -c \"" + preExec + "\"; read -p 'Press Enter to exit...'\"";
 
     desktopFile += "[Desktop Entry]\n";
     desktopFile += "Type=Application\n";

@@ -25,6 +25,10 @@
     - [-staticLibraryCompile](#-staticlibrarycompile)
     - [-C](#-c)
     - [-appBuild](#-appbuild)
+      - [appBuild inputs](#appbuild-inputs)
+        - [-appVer {str}](#-appver-str)
+        - [-instaEndApp {bool}](#-instaendapp-bool)
+        - [-terminalApp {bool}](#-terminalapp-bool)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -193,6 +197,8 @@ This command is "switch" command, using this command makes you compile C code in
 
 ### -appBuild
 
+> ⚠️ MacOS and Linux only
+
 This is used only for MacOS and Linux to build whole app.
 
 >Note: Windows automatically builds .exe files as app, because windows works differently with apps than MacOS and Linux.
@@ -202,6 +208,43 @@ To change your icon, you have to go to `./OSResource/` and change the icon file,
 >Note: Linux app is just `.desktop` file that's saved in `./linuxResources/appName.desktop` and also in `${home}/.local/share/applications/appName.desktop`. Most DEs support this as App and should be accessible in your app search.
 ---
 >Note2: App Building isn't 100% finished yet, some functions will be added later, because not everything can be changed and now is really opinionated (because it's not finished but it'll be changed).
+
+#### appBuild inputs
+
+These inputs only work with using `-appBuild` otherwise they won't change anything.
+
+##### -appVer {str}
+
+> ⚠️ MacOS only
+
+This adds the next version name (**MAC OS ONLY**), this is used in `./macResources/App/$APP_NAME.app/Contents/Info.plist` in `CFBundleVersion` and `CFBundleShortVersionString`.
+What kind of naming scheme you follow is entirely up to you, there isn't any check for the name made by FORGE
+
+##### -instaEndApp {bool}
+
+> ⚠️ Linux only
+
+This is used if you make terminal app so it doesn't end instantly, it takes **true** or **false**, with true the app will be executed as
+
+```bash
+#"forge -instaEndApp true" will make the executable run like this:
+
+executableApp
+
+#"forge -instaEndApp false" will make the executable run like this:
+
+bash -c "executableApp"; read -p 'Press Enter to exit...'\""
+
+```
+
+If it's true it should let the output be on screen until user presses any button, this can also be programmed into your code, then you wouldn't use this.
+
+##### -terminalApp {bool}
+
+> ⚠️ Linux only
+
+This changes in `.desktop` file how value `Terminal` to **false** or **true** depending on your input. This is used for CLI apps / programmes, with this is also recommended
+using the `-instaEndApp`.
 
 ## Usage
 
