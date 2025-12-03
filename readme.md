@@ -17,6 +17,11 @@
     - [windows specific](#windows-specific)
   - [config](#config)
     - [config values](#config-values)
+      - [hash](#hash)
+      - [exeName](#exename)
+      - [compileCommand](#compilecommand)
+      - [createClangFile](#createclangfile)
+      - [threads](#threads)
   - [inputs](#inputs)
     - [-update](#-update)
     - [-path](#-path)
@@ -29,6 +34,8 @@
         - [-appVer {str}](#-appver-str)
         - [-instaEndApp {bool}](#-instaendapp-bool)
         - [-terminalApp {bool}](#-terminalapp-bool)
+          - [Linux](#linux)
+          - [MacOS](#macos)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -155,13 +162,27 @@ compileCommandC clang
 
 ### config values
 
-- `hash` : This switches between Hash and Time mode to compare the values of files.
-- `exeName` : This changes the name of the output `.exe` file, you have to end the name with `.exe`.
-- `compileCommand` : This choses your your command for compiling (and for Mac OS because they use clang++).
-- `createClangFile` : This creates `.clang-format` file if it's true.
-- `threads` : This changes the number of threads.
+#### hash
+
+This switches between Hash and Time mode to compare the values of files.
+
+#### exeName
+
+This changes the name of the output `.exe` file, it should end with `.exe` it will most likely work without it too. Even though it's called `exeName` on MacOS and Linux it's as every other executable without the `.exe` part.
+
+#### compileCommand
+
+This choses your your command for compiling (and for Mac OS because they use clang++).
 
 > Note: if you change it from g++ to something else, you should have in mind that the compilation might not work if you use other compiler. That command looks like this (default): `g++ -c file1.cpp file1.cpp -o app.exe` this is mostly used if you remap your g++ command to something else.
+
+#### createClangFile
+
+This creates `.clang-format` file if it's true in your main directory, this has some defaults I use if you don't have `.clang-format` file in your `FORGE` directory.
+
+#### threads
+
+This changes the number of threads. Generally more threads = faster app building. This isn't true **most** of the times, this makes biggest difference in the initial build, after that **most** of the times, it won't change much. Threads in FORGE works in a way that every file that's compiled into object (`.o`) file is ran on a new thread, so if you don't change more than one file or have just one file when initially building an app this won't change the speed.
 
 ## inputs
 
@@ -226,7 +247,7 @@ What kind of naming scheme you follow is entirely up to you, there isn't any che
 
 This is used if you make terminal app so it doesn't end instantly, it takes **true** or **false**, with true the app will be executed as
 
-```bash
+```sh
 #"forge -instaEndApp true" will make the executable run like this:
 
 executableApp
@@ -241,10 +262,25 @@ If it's true it should let the output be on screen until user presses any button
 
 ##### -terminalApp {bool}
 
-> ⚠️ Linux only
+This works differently on Linux and Mac, but the output is similar.
+
+###### Linux
 
 This changes in `.desktop` file how value `Terminal` to **false** or **true** depending on your input. This is used for CLI apps / programmes, with this is also recommended
 using the `-instaEndApp`.
+
+###### MacOS
+
+> ⛔ This was not yet tested, this might not work or have some issues.
+
+This makes the file run through simple shell script.
+
+```sh
+#!/bin/bash
+open -a Terminal "`dirname \"$0\"`/../Contents/MyProgram"
+```
+
+>Note: "MyProgram" is the name that the program was made with, you can read more about this in this chapter about [exeName](#exename) in config.
 
 ## Usage
 

@@ -48,32 +48,47 @@ void desktopFileCreate(bool terminal, bool instaEnd, std::string version = "not 
     std::filesystem::create_directories(MACCONTENTSMACOS);
     std::filesystem::create_directories(MACCONTENTSRESOURCES);
 
+    std::string executable = (terminal) ? "run.sh" : noExeAppName;
+
+    if (terminal){
+        std::ofstream shell(MACCONTENTSMACOS / "run.sh");
+        shell << "#!/bin/bash\n";
+        shell << "open -a Terminal \"`dirname \\\"$0\\\"`/../Contents/";
+        shell << noExeAppName << "\"\n";
+        shell.close();
+
+        system(("chmod +x \"" + (MACCONTENTSMACOS / "run.sh").string() + "\"").c_str());
+    }
+
     std::ofstream plist(MACCONTENTS / "Info.plist");
     plist << R"(<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>)";
+
     plist << "<key>CFBundleName</key>\n";
-    plist << "<string>" + noExeAppName + "</string>\n";
+    plist << "<string>" << noExeAppName << "</string>\n";
 
     plist << "<key>CFBundleIdentifier</key>\n";
-    plist << "<string>" << "com.example." << noExeAppName + "</string>\n";
+    plist << "<string>com.example." << noExeAppName << "</string>\n";
 
     plist << "<key>CFBundleVersion</key>\n";
-    plist << "<string>" + version + "</string>\n";
+    plist << "<string>" << version << "</string>\n";
 
     plist << "<key>CFBundleShortVersionString</key>\n";
-    plist << "<string>" + version + "</string>\n";
+    plist << "<string>" << version << "</string>\n";
 
     plist << "<key>CFBundleExecutable</key>\n";
-    plist << "<string>" + noExeAppName + "</string>\n";
+    plist << "<string>" << executable << "</string>\n";
 
     plist << "<key>CFBundleIconFile</key>\n";
-    plist << "<string>" << "icon.icns" << "</string>\n";
+    plist << "<string>icon.icns</string>\n";
 
     plist << R"(
 </dict>
 </plist>)";
+
+    plist.close();
 
     std::filesystem::copy_file(MACRESOURCES / "FORGE.icns", MACCONTENTSRESOURCES / "icon.icns", std::filesystem::copy_options::overwrite_existing);
     std::filesystem::copy_file(noExeAppName, MACCONTENTSMACOS / noExeAppName, std::filesystem::copy_options::overwrite_existing);
