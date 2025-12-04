@@ -94,3 +94,4 @@ MaxEmptyLinesToKeep: 1)";
     
     return defaultClang;
 }
+

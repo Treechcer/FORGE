@@ -36,6 +36,7 @@
         - [-terminalApp {bool}](#-terminalapp-bool)
           - [Linux](#linux)
           - [MacOS](#macos)
+    - [-init](#-init)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -282,6 +283,36 @@ open -a Terminal "`dirname \"$0\"`/../Contents/MyProgram"
 
 >Note: "MyProgram" is the name that the program was made with, you can read more about this in this chapter about [exeName](#exename) in config.
 
+### -init
+
+This command is simple command for creating basic C/C++ folder structure for FORGE and basic file for C/C++.
+
+File structure after running `-init`:
+
+```text
+yourFolder/
+├── .FORGE/
+│ ├── .DATA/
+│   ├── forge.forgecfg
+│   ...
+│ └── .PROJECT/
+├── cppFiles/
+│ └── main.cpp
+├── headerFiles/
+├── LIBS/
+│ └── DYNAMIC/
+│ └── SOURCE/
+│ └── STATIC/
+├── resources/
+├── .clang-format
+├── .gitignore
+└── README.md
+```
+
+**🚨 IMPORTANT:** `cppFiles` for `C` project will be `cFiles` instead with generated basic C code.
+
+> NOTE: most of the folders are empty, there's nothing to auto generate after this in my opinion.
+
 ## Usage
 
 You have to use forge in your root of you C++ project (at the start of the whole project, "root" should be the same folder as github repo starts in most cases or where it would start), because the .exe will be outputted there, otherwise it might not work.
@@ -333,7 +364,13 @@ it for now (+ no idea how well it works - this will be tested later).
 
 ### Compiling command
 
-If you want to compile FORGE, the easiest way to compile it:
+Before compilation, you have to clone this repository.
+
+```sh
+git clone https://github.com/Treechcer/FORGE
+```
+
+After this you can compile FORGE, the easiest way to compile it:
 
 `WINDOWS`:
 

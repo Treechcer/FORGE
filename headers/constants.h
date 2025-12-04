@@ -84,6 +84,8 @@ inline void makeMacGlobals() {
 
 //APP BUILD INPUTS
 
-bool TERMINALAPP = true;
-bool INSTAENDAPP = true;
-std::string VERSIONOFAPP = "not set - FORGE default";
+inline bool TERMINALAPP = true;
+inline bool INSTAENDAPP = true;
+inline std::string VERSIONOFAPP = "not set - FORGE default";
+
+inline std::string LANG = "C++";

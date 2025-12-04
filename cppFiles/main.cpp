@@ -534,6 +534,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
             SOURCEFILES = CPOSSIBLESOURCEFILES;
             HEADERFILES = CPOSSIBLEHEADERFILES;
+            LANG = "C";
         }
         else if (cmd == "-appBuild") {
             APPBUILD = true;
@@ -552,6 +553,14 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if (cmd == "-terminalApp"){
             TERMINALAPP = strToBool(argv[i + 1]);
             i++;
+        }
+        else if (cmd == "-init"){
+            if (mode != "NA"){
+                std::cout << "You can't combine modes: " + mode + ", -init";
+                return 1;
+            }
+
+            mode = "-init";
         }
         else{
             std::cout << "[ This input \"" + cmd + "\" isn't found ]";
@@ -613,6 +622,43 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
         std::filesystem::remove("timeTest.exe");
         std::filesystem::remove("timeTest");
+
+        return 1;
+    }
+    else if (mode == "-init"){
+        if (LANG == "C++") {
+            std::filesystem::create_directories("cppFiles");
+            std::filesystem::create_directories("headerFiles");
+            std::filesystem::create_directories("resources");
+            
+            std::ofstream main("cppFiles/main.cpp");
+            main << R"(#include <iostream>
+
+int main() {
+
+	return 0;
+}
+)";
+        }
+        else if (LANG == "C") {
+            std::filesystem::create_directories("cFiles");
+            std::filesystem::create_directories("headerFiles");
+            std::filesystem::create_directories("resources");
+            std::ofstream main("cFiles/main.cpp");
+            main << R"(#include <stdio.h>
+
+int main() {
+
+    return 0;
+})";
+        }
+
+        makeMacGlobals();
+
+        std::ofstream readme("README.md");
+        readme << "# ";
+        readme << noExeAppName;
+        readme << "\n";
 
         return 1;
     }
@@ -685,6 +731,57 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     }
 }
 
+void createClangFile(){
+    if (strToBool(cfgVals("createClangFile"))) {
+        if (!std::filesystem::exists(std::filesystem::path(CONFIGFOLDER) / ".clang-format")) {
+            std::ofstream ofs(CONFIGFOLDER / ".clang-format");
+            ofs << getDefaultClangFile();
+        }
+
+        if (!std::filesystem::exists(std::filesystem::path(".") / ".clang-format")) {
+            std::ofstream ofs(".clang-format");
+            ofs << getDefaultClangFile();
+        }
+    }
+}
+
+void gitIgnore(){
+    if (!std::filesystem::exists(".gitignore")) {
+        std::ofstream ofs(".gitignore");
+    }
+
+    if (std::filesystem::exists(".gitignore")) {
+        bool exists = false;
+        std::ifstream ifs(".gitignore");
+        std::string line;
+        while (std::getline(ifs, line)) {
+            if (line == ".FORGE") {
+                exists = true;
+                break;
+            }
+        }
+        ifs.close();
+        if (!exists) {
+            std::ofstream ofs(".gitignore");
+            ofs << ".FORGE" << std::endl;
+            ofs.close();
+        }
+    }
+}
+
+void configWork(){
+    if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
+        std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
+        ofs << parser::defaultConfig();
+    }
+
+    if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
+        std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
+        //std::cout << CONFIGFOLDER / "forge.forgecfg";
+        create();
+    }
+}
+
 int main(int argc, char *argv[]) {
     auto now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
@@ -709,50 +806,11 @@ int main(int argc, char *argv[]) {
 
     std::filesystem::create_directories(CONFIGFOLDER);
 
-    if (!std::filesystem::exists(".gitignore")) {
-        std::ofstream ofs(".gitignore");
-    }
+    gitIgnore();
 
-    if (std::filesystem::exists(".gitignore")) {
-        bool exists = false;
-        std::ifstream ifs(".gitignore");
-        std::string line;
-        while (std::getline(ifs, line)) {
-            if (line == ".FORGE") {
-                exists = true;
-                break;
-            }
-        }
-        ifs.close();
-        if (!exists) {
-            std::ofstream ofs(".gitignore");
-            ofs << ".FORGE" << std::endl;
-            ofs.close();
-        }
-    }
+    configWork();
 
-    if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
-        std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
-        ofs << parser::defaultConfig();
-    }
-
-    if (!std::filesystem::exists(FORGEDATAPATH / "forge.forgecfg")) {
-        std::filesystem::copy(CONFIGFOLDER / "forge.forgecfg", FORGEDATAPATH / "forge.forgecfg", std::filesystem::copy_options::overwrite_existing);
-        //std::cout << CONFIGFOLDER / "forge.forgecfg";
-        create();
-    }
-
-    if (strToBool(cfgVals("createClangFile"))) {
-        if (!std::filesystem::exists(std::filesystem::path(CONFIGFOLDER) / ".clang-format")) {
-            std::ofstream ofs(CONFIGFOLDER / ".clang-format");
-            ofs << getDefaultClangFile();
-        }
-
-        if (!std::filesystem::exists(std::filesystem::path(".") / ".clang-format")) {
-            std::ofstream ofs(".clang-format");
-            ofs << getDefaultClangFile();
-        }
-    }
+    createClangFile();
 
     COMPILERCOMMAND = cfgVals("compileCommand");
 
@@ -789,12 +847,12 @@ int main(int argc, char *argv[]) {
 
     creatingProject(true, compileAsStaticLib);
 
-    auto endTime = std::chrono::system_clock::now();
-    auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
-
     if (APPBUILD) {
         desktopFileCreate(TERMINALAPP, INSTAENDAPP, VERSIONOFAPP);
     }
+
+    auto endTime = std::chrono::system_clock::now();
+    auto msEnd = std::chrono::duration_cast<std::chrono::milliseconds>(endTime.time_since_epoch()).count();
 
     std::cout << "Time (ms): " << (msEnd - ms) << std::endl;
     std::cout << "Time (s): " << double(msEnd - ms) / 1000 << std::endl;
