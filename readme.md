@@ -37,6 +37,7 @@
           - [Linux](#linux)
           - [MacOS](#macos)
     - [-init](#-init)
+    - [-clear](#-clear)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -312,6 +313,10 @@ yourFolder/
 **🚨 IMPORTANT:** `cppFiles` for `C` project will be `cFiles` instead with generated basic C code.
 
 > NOTE: most of the folders are empty, there's nothing to auto generate after this in my opinion.
+
+### -clear
+
+This removes `.FORGE` directory and everything in it.
 
 ## Usage
 

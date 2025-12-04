@@ -539,30 +539,38 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
         else if (cmd == "-appBuild") {
             APPBUILD = true;
         }
-        else if(i == 0){
+        else if (i == 0) {
             continue;
         }
-        else if (cmd == "-appVer"){
-            VERSIONOFAPP = strToBool(argv[i+1]);
+        else if (cmd == "-appVer") {
+            VERSIONOFAPP = strToBool(argv[i + 1]);
             i++;
         }
-        else if (cmd == "-instaEndApp"){
+        else if (cmd == "-instaEndApp") {
             INSTAENDAPP = strToBool(argv[i + 1]);
             i++;
         }
-        else if (cmd == "-terminalApp"){
+        else if (cmd == "-terminalApp") {
             TERMINALAPP = strToBool(argv[i + 1]);
             i++;
         }
-        else if (cmd == "-init"){
-            if (mode != "NA"){
+        else if (cmd == "-init") {
+            if (mode != "NA") {
                 std::cout << "You can't combine modes: " + mode + ", -init";
                 return 1;
             }
 
             mode = "-init";
         }
-        else{
+        else if (cmd == "-clean") {
+            if (mode != "NA") {
+                std::cout << "You can't combine modes: " + mode + ", -clean";
+                return 1;
+            }
+
+            mode = "-clean";
+        }
+        else {
             std::cout << "[ This input \"" + cmd + "\" isn't found ]";
             std::exit(1);
         }
@@ -625,12 +633,12 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
         return 1;
     }
-    else if (mode == "-init"){
+    else if (mode == "-init") {
         if (LANG == "C++") {
             std::filesystem::create_directories("cppFiles");
             std::filesystem::create_directories("headerFiles");
             std::filesystem::create_directories("resources");
-            
+
             std::ofstream main("cppFiles/main.cpp");
             main << R"(#include <iostream>
 
@@ -659,6 +667,23 @@ int main() {
         readme << "# ";
         readme << noExeAppName;
         readme << "\n";
+
+        return 1;
+    }
+    else if (mode == "-clear") {
+
+        std::cout << "Are you sure you want to remove .FORGE/ ? Type yes/y/no/n to continue: ";
+        std::string input;
+        std::cin >> input;
+
+        while (input != "yes" && input != "y" && input != "no" && input != "n") {
+            std::cout << "incorrect input, asking again: ";
+            std::cin >> input;
+        }
+
+        if (input == "y" || input == "yes"){
+            std::filesystem::remove_all(".FORGE");
+        }
 
         return 1;
     }
@@ -731,7 +756,7 @@ void creatingProject(bool writeOutEnd, bool staticLib) {
     }
 }
 
-void createClangFile(){
+void createClangFile() {
     if (strToBool(cfgVals("createClangFile"))) {
         if (!std::filesystem::exists(std::filesystem::path(CONFIGFOLDER) / ".clang-format")) {
             std::ofstream ofs(CONFIGFOLDER / ".clang-format");
@@ -745,7 +770,7 @@ void createClangFile(){
     }
 }
 
-void gitIgnore(){
+void gitIgnore() {
     if (!std::filesystem::exists(".gitignore")) {
         std::ofstream ofs(".gitignore");
     }
@@ -769,7 +794,7 @@ void gitIgnore(){
     }
 }
 
-void configWork(){
+void configWork() {
     if (!std::filesystem::exists(CONFIGFOLDER / "forge.forgecfg")) {
         std::ofstream ofs(CONFIGFOLDER / "forge.forgecfg");
         ofs << parser::defaultConfig();
