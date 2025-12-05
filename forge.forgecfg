@@ -5,3 +5,6 @@ createClangFile true
 threads 4
 language C++
 compileCommandC gcc
+buildFlags " "
+compileFlags " "
+compileStaticLibFlag " "

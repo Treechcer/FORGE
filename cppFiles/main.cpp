@@ -61,6 +61,7 @@ void compileN(std::vector<std::filesystem::path> pathAfter) {
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
+        cmd.append(" " + cfgVals("compileFlags"));
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
@@ -255,6 +256,7 @@ void compileAll(std::vector<std::filesystem::path> pathAfter) {
         cmd.append(pathAfter[i].string());
         cmd.append(" -o ");
         cmd.append(pathAfter[i].replace_extension(".o").string());
+        cmd.append(" " + cfgVals("compileFlags"));
         // std::cout << cmd << std::endl;
         int res = system(cmd.c_str());
         if (res != 0) {
@@ -275,6 +277,7 @@ void compileOne(std::filesystem::path pathAfter) {
     cmd.append(pathAfter.string());
     cmd.append(" -o ");
     cmd.append(pathAfter.replace_extension(".o").string());
+    cmd.append(" " + cfgVals("compileFlags"));
     // std::cout << cmd << std::endl;
     int res = system(cmd.c_str());
     if (res != 0) {
@@ -352,7 +355,11 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
 
     // std::cout << allObJs << "\n";
     std::string appName = cfgVals("exeName");
-    ;
+
+    if (NAME != "NOT-SET"){
+        appName = NAME;
+    }
+
     if (!appName.empty() && appName.back() == '\r') {
         appName.pop_back();
     }
@@ -378,6 +385,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
         //std::cout << cmd;;
         //std::exit(1);
         cmd.append((OUTPUTPATH / appName).string());
+        cmd.append(" " + cfgVals("buildFlags"));
         std::cout << "[ Executing command: " << cmd << " ]" << std::endl;
 
         //std::cout << staticLibComm;
@@ -456,6 +464,7 @@ void buildPorject(std::vector<std::filesystem::path> pathAfter, std::filesystem:
                         //system(cmd.c_str());
                         //std::cout << LIBFORGECOPIED / tempPath / libCompile[i].filename();
                         //std::cout << tempPath << std::endl;
+                        cmd.append(" " + cfgVals("compileStaticLibFlag"));
                         compileCommands.push_back(cmd);
                         //compilepathLibs.push_back(std::vector<std::filesystem::path>{tempCompilePath, (LIBFORGECOPIED / tempCompilePath).root_directory()});
                         //std::cout << "????" << LIBFORGECOPIED / (LIBFORGECOPIED / tempCompilePath).root_directory() << std::endl;
@@ -569,6 +578,10 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             }
 
             mode = "-clean";
+        }
+        else if (cmd == "-name"){
+            NAME = argv[i + 1];
+            i++;
         }
         else {
             std::cout << "[ This input \"" + cmd + "\" isn't found ]";
