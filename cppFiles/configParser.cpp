@@ -57,7 +57,10 @@ compileCommand "clang++ --std=c++17"
 createClangFile true
 threads 4
 language C++
-compileCommandC clang)";
+compileCommandC clang
+buildFlags " "
+compileFlags " "
+compileStaticLibFlag " ")";
 #else
     return R"(hash false
 exeName "forge app.exe" -KEEP
@@ -65,7 +68,10 @@ compileCommand g++
 createClangFile true
 threads 4
 language C++
-compileCommandC gcc)";
+compileCommandC gcc
+buildFlags " "
+compileFlags " "
+compileStaticLibFlag " ")";
 #endif
 }
 
