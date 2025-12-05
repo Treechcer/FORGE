@@ -22,6 +22,9 @@
       - [compileCommand](#compilecommand)
       - [createClangFile](#createclangfile)
       - [threads](#threads)
+      - [buildFlags](#buildflags)
+      - [compileFlags](#compileflags)
+      - [compileStaticLibFlag](#compilestaticlibflag)
   - [inputs](#inputs)
     - [-update](#-update)
     - [-path](#-path)
@@ -38,6 +41,7 @@
           - [MacOS](#macos)
     - [-init](#-init)
     - [-clear](#-clear)
+    - [-name](#-name)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -186,6 +190,26 @@ This creates `.clang-format` file if it's true in your main directory, this has 
 
 This changes the number of threads. Generally more threads = faster app building. This isn't true **most** of the times, this makes biggest difference in the initial build, after that **most** of the times, it won't change much. Threads in FORGE works in a way that every file that's compiled into object (`.o`) file is ran on a new thread, so if you don't change more than one file or have just one file when initially building an app this won't change the speed.
 
+#### buildFlags
+
+This is used when you want to build project with some flags. For example if you want to link all your `.o` files after compiling them you can use make FORGE use command like.
+
+```sh
+g++ main.o side.o -o main.o -mwindows
+```
+
+#### compileFlags
+
+This is used to change your flags when compiling some files, you can make for example this.
+
+```sh
+g++ main.o -o main.o -Wall -std=c++17
+```
+
+#### compileStaticLibFlag
+
+This is used for making special flags when compiling to static library, static libraries in gust are just `.o` files, so it works same as [compileFlags](#compileflags).
+
 ## inputs
 
 Inputs are used to change the behavior of FORGE, you don't have to really use them, but they provide more functionality.
@@ -317,6 +341,12 @@ yourFolder/
 ### -clear
 
 This removes `.FORGE` directory and everything in it.
+
+### -name
+
+Changes the output name to whatever you put in as argument.
+
+>NOTE: automatically adds `.exe` on windows and on linux deletes the `.exe`
 
 ## Usage
 
