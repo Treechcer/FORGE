@@ -208,7 +208,7 @@ g++ main.o -o main.o -Wall -std=c++17
 
 #### compileStaticLibFlag
 
-This is used for making special flags when compiling to static library, static libraries in gust are just `.o` files, so it works same as [compileFlags](#compileflags).
+This is used for making special flags when compiling to static library, static libraries in FORGE are just `.o` files, so it works same as [compileFlags](#compileflags).
 
 ## inputs
 

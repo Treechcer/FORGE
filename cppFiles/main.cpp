@@ -552,7 +552,7 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
             continue;
         }
         else if (cmd == "-appVer") {
-            VERSIONOFAPP = strToBool(argv[i + 1]);
+            VERSIONOFAPP = argv[i + 1];
             i++;
         }
         else if (cmd == "-instaEndApp") {
@@ -571,17 +571,21 @@ int checkInputs(int argc, char *argv[], std::filesystem::path currentDir) {
 
             mode = "-init";
         }
-        else if (cmd == "-clean") {
+        else if (cmd == "-clear") {
             if (mode != "NA") {
-                std::cout << "You can't combine modes: " + mode + ", -clean";
+                std::cout << "You can't combine modes: " + mode + ", -clear";
                 return 1;
             }
 
-            mode = "-clean";
+            mode = "-clear";
         }
         else if (cmd == "-name"){
             NAME = argv[i + 1];
             i++;
+        }
+        else if (cmd == "-version"){
+            std::cout << "FORGE version: " << FORGEVERSION << "\n type of release: " << RELEASE << std::endl;
+            std::exit(0);
         }
         else {
             std::cout << "[ This input \"" + cmd + "\" isn't found ]";

@@ -90,3 +90,8 @@ inline std::string VERSIONOFAPP = "not set - FORGE default";
 
 inline std::string LANG = "C++";
 inline std::string NAME = "NOT-SET";
+
+//values for version and similar
+
+inline std::string FORGEVERSION = "25.12.1";
+inline std::string RELEASE = "REPO";
