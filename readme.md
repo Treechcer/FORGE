@@ -42,6 +42,7 @@
     - [-init](#-init)
     - [-clear](#-clear)
     - [-name](#-name)
+    - [-version](#-version)
   - [Usage](#usage)
     - [Library Compile](#library-compile)
       - [Static Libraries](#static-libraries)
@@ -52,7 +53,8 @@
       - [MacOS / Linux](#macos--linux)
     - [Compile yourself](#compile-yourself)
     - [Compiling command](#compiling-command)
-  - [Future](#future)
+  - [Versioning](#versioning)
+    - [Releases](#releases)
   - [License](#license)
 
 ## intro
@@ -348,6 +350,10 @@ Changes the output name to whatever you put in as argument.
 
 >NOTE: automatically adds `.exe` on windows and on linux deletes the `.exe`
 
+### -version
+
+This makes FORGE print out version of FORGE and release.
+
 ## Usage
 
 You have to use forge in your root of you C++ project (at the start of the whole project, "root" should be the same folder as github repo starts in most cases or where it would start), because the .exe will be outputted there, otherwise it might not work.
@@ -459,13 +465,13 @@ After this you should be able to call forge by just typing forge into your termi
 this should compile your current working directory or fail at it (if the directory
 doesn't contain .cpp files).
 
-## Future
+## Versioning
 
-In future I want to add / fix the update function, make the inputs better
-because now the order matters which is bad and incorrect. I want to
-also fix the update function because now it doesn't work. Make
-the parser better and have more values to configure and maybe more
-flags if needed.
+Versions of `FORGE` follow this format -> YEAR . MONTH + REVISION
+
+### Releases
+
+Release is where you got FORGE REPO, STABLE etc. Stable were not really released yet.
 
 ## License
 
